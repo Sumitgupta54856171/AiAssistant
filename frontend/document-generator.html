@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Document Generator — OmniAssist AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.3); }
+  .dark .glass { background: rgba(17,24,39,0.7); border: 1px solid rgba(255,255,255,0.1); }
+  .gradient-text { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .gradient-bg { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); }
+  .sidebar-link { transition: all 0.2s; }
+  .sidebar-link:hover, .sidebar-link.active { background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(124,58,237,0.1)); color: #2563eb; }
+  .dark .sidebar-link:hover, .dark .sidebar-link.active { background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(124,58,237,0.2)); color: #60a5fa; }
+  .doc-type-card { transition: all 0.3s; cursor: pointer; }
+  .doc-type-card:hover { transform: translateY(-4px); }
+  .doc-type-card.selected { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  .dark ::-webkit-scrollbar-thumb { background: #475569; }
+</style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+
+<div class="flex h-screen overflow-hidden">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+    <div class="h-16 px-6 flex items-center border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-lg">
+          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-lg font-bold gradient-text">OmniAssist</span>
+      </a>
+    </div>
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard</a>
+      <a href="ai-chat.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="message-circle" class="w-5 h-5"></i> AI Chat</a>
+      <a href="voice-ai.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="phone-call" class="w-5 h-5"></i> Voice AI</a>
+      <a href="document-generator.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium"><i data-lucide="file-text" class="w-5 h-5"></i> Documents</a>
+      <a href="knowledge-base.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="database" class="w-5 h-5"></i> Knowledge Base</a>
+      <a href="analytics.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> Analytics</a>
+      <a href="settings.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="settings" class="w-5 h-5"></i> Settings</a>
+    </nav>
+  </aside>
+  <div id="sidebarOverlay" class="hidden lg:hidden fixed inset-0 bg-black/50 z-30"></div>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="h-16 px-4 sm:px-6 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <button id="sidebarToggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="menu" class="w-5 h-5"></i></button>
+        <h1 class="text-lg sm:text-xl font-bold">Document Generator</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+          <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+          <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+        </button>
+        <a href="profile.html" class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-white text-sm font-bold">JD</a>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+      <div class="max-w-7xl mx-auto">
+        <!-- Document Type Selection -->
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold mb-2">Choose document type</h2>
+          <p class="text-gray-500 mb-6">Select what you want to generate. AI will create it instantly.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div class="doc-type-card glass rounded-2xl p-5 border-2 border-gray-200 dark:border-gray-800" data-type="agreement">
+              <div class="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mb-3">
+                <i data-lucide="file-contract" class="w-6 h-6 text-primary-600"></i>
+              </div>
+              <h3 class="font-bold text-sm">Agreement</h3>
+              <p class="text-xs text-gray-500 mt-1">Legal contracts</p>
+            </div>
+            <div class="doc-type-card glass rounded-2xl p-5 border-2 border-gray-200 dark:border-gray-800 selected" data-type="invoice">
+              <div class="w-12 h-12 rounded-xl bg-success-100 dark:bg-success-900/30 flex items-center justify-center mb-3">
+                <i data-lucide="receipt" class="w-6 h-6 text-success-600"></i>
+              </div>
+              <h3 class="font-bold text-sm">Invoice</h3>
+              <p class="text-xs text-gray-500 mt-1">Billing & payments</p>
+            </div>
+            <div class="doc-type-card glass rounded-2xl p-5 border-2 border-gray-200 dark:border-gray-800" data-type="quotation">
+              <div class="w-12 h-12 rounded-xl bg-secondary-100 dark:bg-secondary-900/30 flex items-center justify-center mb-3">
+                <i data-lucide="file-badge" class="w-6 h-6 text-secondary-600"></i>
+              </div>
+              <h3 class="font-bold text-sm">Quotation</h3>
+              <p class="text-xs text-gray-500 mt-1">Price estimates</p>
+            </div>
+            <div class="doc-type-card glass rounded-2xl p-5 border-2 border-gray-200 dark:border-gray-800" data-type="certificate">
+              <div class="w-12 h-12 rounded-xl bg-warning-100 dark:bg-warning-900/30 flex items-center justify-center mb-3">
+                <i data-lucide="award" class="w-6 h-6 text-warning-600"></i>
+              </div>
+              <h3 class="font-bold text-sm">Certificate</h3>
+              <p class="text-xs text-gray-500 mt-1">Achievements</p>
+            </div>
+            <div class="doc-type-card glass rounded-2xl p-5 border-2 border-gray-200 dark:border-gray-800" data-type="report">
+              <div class="w-12 h-12 rounded-xl bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center mb-3">
+                <i data-lucide="file-bar-chart" class="w-6 h-6 text-pink-600"></i>
+              </div>
+              <h3 class="font-bold text-sm">Report</h3>
+              <p class="text-xs text-gray-500 mt-1">Business reports</p>
+            </div>
+            <div class="doc-type-card glass rounded-2xl p-5 border-2 border-gray-200 dark:border-gray-800" data-type="offer">
+              <div class="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-3">
+                <i data-lucide="briefcase" class="w-6 h-6 text-indigo-600"></i>
+              </div>
+              <h3 class="font-bold text-sm">Offer Letter</h3>
+              <p class="text-xs text-gray-500 mt-1">Job offers</p>
+            </div>
+            <div class="doc-type-card glass rounded-2xl p-5 border-2 border-gray-200 dark:border-gray-800" data-type="experience">
+              <div class="w-12 h-12 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center mb-3">
+                <i data-lucide="user-check" class="w-6 h-6 text-teal-600"></i>
+              </div>
+              <h3 class="font-bold text-sm">Experience Letter</h3>
+              <p class="text-xs text-gray-500 mt-1">Employment proof</p>
+            </div>
+            <div class="doc-type-card glass rounded-2xl p-5 border-2 border-gray-200 dark:border-gray-800" data-type="purchase">
+              <div class="w-12 h-12 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center mb-3">
+                <i data-lucide="shopping-bag" class="w-6 h-6 text-cyan-600"></i>
+              </div>
+              <h3 class="font-bold text-sm">Purchase Order</h3>
+              <p class="text-xs text-gray-500 mt-1">Order requests</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Form -->
+          <div class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+            <h3 class="text-lg font-bold mb-4">Document Details</h3>
+            <form class="space-y-4">
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-sm font-medium mb-1">Invoice #</label>
+                  <input type="text" value="INV-2847" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-1">Date</label>
+                  <input type="date" value="2025-01-15" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Bill To</label>
+                <input type="text" value="Sarah Johnson" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Address</label>
+                <textarea rows="2" class="w-full px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none text-sm">123 Main St, New York, USA</textarea>
+              </div>
+
+              <!-- Items -->
+              <div>
+                <label class="block text-sm font-medium mb-2">Items</label>
+                <div class="space-y-2">
+                  <div class="grid grid-cols-12 gap-2 text-xs font-semibold text-gray-500 px-1">
+                    <div class="col-span-6">Description</div>
+                    <div class="col-span-2">Qty</div>
+                    <div class="col-span-3">Price</div>
+                    <div class="col-span-1"></div>
+                  </div>
+                  <div class="grid grid-cols-12 gap-2">
+                    <input type="text" value="Consultation" class="col-span-6 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm" />
+                    <input type="number" value="1" class="col-span-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm" />
+                    <input type="number" value="150" class="col-span-3 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm" />
+                    <button class="col-span-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                  </div>
+                  <div class="grid grid-cols-12 gap-2">
+                    <input type="text" value="Lab Tests" class="col-span-6 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm" />
+                    <input type="number" value="2" class="col-span-2 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm" />
+                    <input type="number" value="80" class="col-span-3 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm" />
+                    <button class="col-span-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                  </div>
+                  <button class="text-sm text-primary-600 hover:text-primary-700 font-semibold flex items-center gap-1">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Add item
+                  </button>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+                <div class="flex justify-between text-sm"><span class="text-gray-500">Subtotal</span><span class="font-semibold">$310.00</span></div>
+                <div class="flex justify-between text-sm"><span class="text-gray-500">Tax (10%)</span><span class="font-semibold">$31.00</span></div>
+                <div class="flex justify-between text-lg font-bold pt-2 border-t border-gray-200 dark:border-gray-700"><span>Total</span><span class="gradient-text">$341.00</span></div>
+              </div>
+
+              <button type="button" class="w-full gradient-bg text-white font-semibold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                Generate with AI
+              </button>
+            </form>
+          </div>
+
+          <!-- Preview -->
+          <div class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold">Preview</h3>
+              <div class="flex gap-2">
+                <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Download PDF"><i data-lucide="download" class="w-4 h-4"></i></button>
+                <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Download DOCX"><i data-lucide="file-text" class="w-4 h-4"></i></button>
+                <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Print"><i data-lucide="printer" class="w-4 h-4"></i></button>
+                <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Share"><i data-lucide="share-2" class="w-4 h-4"></i></button>
+              </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-inner border border-gray-200 dark:border-gray-700 aspect-[3/4] overflow-y-auto">
+              <!-- Document Preview -->
+              <div class="text-center mb-6">
+                <div class="w-12 h-12 mx-auto rounded-xl gradient-bg flex items-center justify-center mb-2">
+                  <i data-lucide="sparkles" class="w-6 h-6 text-white"></i>
+                </div>
+                <h2 class="text-2xl font-bold">INVOICE</h2>
+                <p class="text-sm text-gray-500">MediCare Hospital</p>
+              </div>
+              <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
+                <div>
+                  <p class="text-gray-500 text-xs">Bill To:</p>
+                  <p class="font-semibold">Sarah Johnson</p>
+                  <p class="text-gray-600">123 Main St, New York</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-gray-500 text-xs">Invoice #</p>
+                  <p class="font-semibold">INV-2847</p>
+                  <p class="text-gray-500 text-xs mt-1">Date: Jan 15, 2025</p>
+                </div>
+              </div>
+              <table class="w-full text-sm mb-6">
+                <thead>
+                  <tr class="border-b-2 border-gray-300">
+                    <th class="text-left py-2">Description</th>
+                    <th class="text-center py-2">Qty</th>
+                    <th class="text-right py-2">Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-gray-200">
+                    <td class="py-2">Consultation</td>
+                    <td class="text-center">1</td>
+                    <td class="text-right">$150.00</td>
+                  </tr>
+                  <tr class="border-b border-gray-200">
+                    <td class="py-2">Lab Tests</td>
+                    <td class="text-center">2</td>
+                    <td class="text-right">$160.00</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="text-right space-y-1 text-sm">
+                <p>Subtotal: $310.00</p>
+                <p>Tax (10%): $31.00</p>
+                <p class="text-xl font-bold gradient-text">Total: $341.00</p>
+              </div>
+              <div class="mt-6 pt-4 border-t border-gray-200 text-center text-xs text-gray-500">
+                Thank you for your business!
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Documents -->
+        <div class="mt-8 glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold">Recent Documents</h3>
+            <button class="text-sm text-primary-600 hover:text-primary-700 font-medium">View all</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gray-200 dark:border-gray-700">
+                  <th class="text-left py-3 px-2 font-semibold">Document</th>
+                  <th class="text-left py-3 px-2 font-semibold">Type</th>
+                  <th class="text-left py-3 px-2 font-semibold">Customer</th>
+                  <th class="text-left py-3 px-2 font-semibold">Date</th>
+                  <th class="text-right py-3 px-2 font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                  <td class="py-3 px-2 font-semibold">INV-2847</td>
+                  <td class="py-3 px-2"><span class="px-2 py-1 rounded-full bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 text-xs">Invoice</span></td>
+                  <td class="py-3 px-2">Sarah Johnson</td>
+                  <td class="py-3 px-2 text-gray-500">Jan 15, 2025</td>
+                  <td class="py-3 px-2 text-right">
+                    <button class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="download" class="w-4 h-4"></i></button>
+                    <button class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                  </td>
+                </tr>
+                <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                  <td class="py-3 px-2 font-semibold">AGR-1284</td>
+                  <td class="py-3 px-2"><span class="px-2 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs">Agreement</span></td>
+                  <td class="py-3 px-2">Mike Chen</td>
+                  <td class="py-3 px-2 text-gray-500">Jan 14, 2025</td>
+                  <td class="py-3 px-2 text-right">
+                    <button class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="download" class="w-4 h-4"></i></button>
+                    <button class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                  </td>
+                </tr>
+                <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                  <td class="py-3 px-2 font-semibold">QUO-0923</td>
+                  <td class="py-3 px-2"><span class="px-2 py-1 rounded-full bg-secondary-100 dark:bg-secondary-900/30 text-secondary-700 dark:text-secondary-300 text-xs">Quotation</span></td>
+                  <td class="py-3 px-2">Emma Wilson</td>
+                  <td class="py-3 px-2 text-gray-500">Jan 13, 2025</td>
+                  <td class="py-3 px-2 text-right">
+                    <button class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="download" class="w-4 h-4"></i></button>
+                    <button class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+  const html = document.documentElement;
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  if (savedTheme === 'dark') html.classList.add('dark');
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    lucide.createIcons();
+  });
+
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('-translate-x-full');
+    sidebarOverlay.classList.toggle('hidden');
+  });
+  sidebarOverlay.addEventListener('click', () => {
+    sidebar.classList.add('-translate-x-full');
+    sidebarOverlay.classList.add('hidden');
+  });
+
+  // Document type selection
+  document.querySelectorAll('.doc-type-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.doc-type-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    });
+  });
+</script>
+</body>
+</html>
