@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Profile — OmniAssist AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.3); }
+  .dark .glass { background: rgba(17,24,39,0.7); border: 1px solid rgba(255,255,255,0.1); }
+  .gradient-text { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .gradient-bg { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); }
+  .sidebar-link { transition: all 0.2s; }
+  .sidebar-link:hover, .sidebar-link.active { background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(124,58,237,0.1)); color: #2563eb; }
+  .dark .sidebar-link:hover, .dark .sidebar-link.active { background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(124,58,237,0.2)); color: #60a5fa; }
+  .profile-nav-item { transition: all 0.2s; border-left: 3px solid transparent; }
+  .profile-nav-item:hover { background: linear-gradient(135deg, rgba(37,99,235,0.05), rgba(124,58,237,0.05)); }
+  .profile-nav-item.active { background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(124,58,237,0.1)); color: #2563eb; border-left-color: #2563eb; }
+  .dark .profile-nav-item.active { background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(124,58,237,0.2)); color: #60a5fa; border-left-color: #60a5fa; }
+  .toggle { width: 44px; height: 24px; background: #cbd5e1; border-radius: 12px; position: relative; cursor: pointer; transition: all 0.3s; flex-shrink: 0; }
+  .toggle.active { background: linear-gradient(135deg, #2563EB, #7C3AED); }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+  .toggle.active::after { left: 22px; }
+  .input-field { transition: all 0.2s; }
+  .input-field:focus { transform: translateY(-1px); }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  .dark ::-webkit-scrollbar-thumb { background: #475569; }
+</style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+
+<div class="flex h-screen overflow-hidden">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+    <div class="h-16 px-6 flex items-center border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-lg">
+          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-lg font-bold gradient-text">OmniAssist</span>
+      </a>
+    </div>
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard</a>
+      <a href="ai-chat.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="message-circle" class="w-5 h-5"></i> AI Chat</a>
+      <a href="voice-ai.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="phone-call" class="w-5 h-5"></i> Voice AI</a>
+      <a href="document-generator.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="file-text" class="w-5 h-5"></i> Documents</a>
+      <a href="knowledge-base.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="database" class="w-5 h-5"></i> Knowledge Base</a>
+      <a href="analytics.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> Analytics</a>
+      <a href="settings.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="settings" class="w-5 h-5"></i> Settings</a>
+    </nav>
+  </aside>
+  <div id="sidebarOverlay" class="hidden lg:hidden fixed inset-0 bg-black/50 z-30"></div>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="h-16 px-4 sm:px-6 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <button id="sidebarToggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="menu" class="w-5 h-5"></i></button>
+        <h1 class="text-lg sm:text-xl font-bold">Profile</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+          <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+          <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+      <div class="max-w-6xl mx-auto">
+        <!-- Profile Header -->
+        <div class="glass rounded-3xl p-8 border border-gray-200 dark:border-gray-800 mb-6 relative overflow-hidden">
+          <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary-500 rounded-full blur-3xl"></div>
+          </div>
+          <div class="relative flex flex-col sm:flex-row items-center gap-6">
+            <div class="relative">
+              <div class="w-24 h-24 rounded-full gradient-bg flex items-center justify-center text-white text-3xl font-bold shadow-2xl">JD</div>
+              <button class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                <i data-lucide="camera" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <div class="flex-1 text-center sm:text-left">
+              <h2 class="text-2xl font-bold">John Doe</h2>
+              <p class="text-gray-500">john@medicare.com</p>
+              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-3">
+                <span class="px-3 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs font-semibold">Pro Plan</span>
+                <span class="px-3 py-1 rounded-full bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 text-xs font-semibold">Verified</span>
+                <span class="text-xs text-gray-500">Member since Jan 2024</span>
+              </div>
+            </div>
+            <button class="gradient-bg text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg hover:scale-[1.02] transition-transform">
+              Edit Profile
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <!-- Profile Nav -->
+          <aside class="lg:col-span-1">
+            <div class="glass rounded-2xl p-4 border border-gray-200 dark:border-gray-800 sticky top-4">
+              <nav class="space-y-1">
+                <a href="#personal" class="profile-nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium">
+                  <i data-lucide="user" class="w-4 h-4"></i> Personal Info
+                </a>
+                <a href="#security" class="profile-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <i data-lucide="shield" class="w-4 h-4"></i> Security
+                </a>
+                <a href="#billing" class="profile-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <i data-lucide="credit-card" class="w-4 h-4"></i> Billing
+                </a>
+                <a href="#subscription" class="profile-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <i data-lucide="crown" class="w-4 h-4"></i> Subscription
+                </a>
+                <a href="#preferences" class="profile-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <i data-lucide="sliders" class="w-4 h-4"></i> Preferences
+                </a>
+              </nav>
+            </div>
+          </aside>
+
+          <!-- Profile Content -->
+          <div class="lg:col-span-3 space-y-6">
+
+            <!-- Personal Info -->
+            <section id="personal" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                  <i data-lucide="user" class="w-5 h-5 text-primary-600"></i>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold">Personal Information</h2>
+                  <p class="text-sm text-gray-500">Update your personal details</p>
+                </div>
+              </div>
+              <form class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-2">First Name</label>
+                    <input type="text" value="John" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Last Name</label>
+                    <input type="text" value="Doe" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Email Address</label>
+                  <input type="email" value="john@medicare.com" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Phone Number</label>
+                  <input type="tel" value="+1 (555) 123-4567" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Bio</label>
+                  <textarea rows="3" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none">Hospital administrator passionate about leveraging AI to improve patient care.</textarea>
+                </div>
+                <div class="flex justify-end pt-4">
+                  <button type="button" class="gradient-bg text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg hover:scale-[1.02] transition-transform">Save Changes</button>
+                </div>
+              </form>
+            </section>
+
+            <!-- Security -->
+            <section id="security" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-success-100 dark:bg-success-900/30 flex items-center justify-center">
+                  <i data-lucide="shield" class="w-5 h-5 text-success-600"></i>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold">Security</h2>
+                  <p class="text-sm text-gray-500">Protect your account</p>
+                </div>
+              </div>
+              <div class="space-y-4">
+                <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  <h3 class="font-semibold mb-3">Change Password</h3>
+                  <div class="space-y-3">
+                    <input type="password" placeholder="Current password" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                    <input type="password" placeholder="New password" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                    <input type="password" placeholder="Confirm new password" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                    <button class="gradient-bg text-white font-semibold px-4 py-2 rounded-xl text-sm">Update Password</button>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                      <i data-lucide="smartphone" class="w-5 h-5 text-primary-600"></i>
+                    </div>
+                    <div>
+                      <div class="font-semibold text-sm">Two-Factor Authentication</div>
+                      <div class="text-xs text-gray-500">Add an extra layer of security</div>
+                    </div>
+                  </div>
+                  <div class="toggle active" data-toggle></div>
+                </div>
+                <div class="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-success-100 dark:bg-success-900/30 flex items-center justify-center">
+                      <i data-lucide="mail-check" class="w-5 h-5 text-success-600"></i>
+                    </div>
+                    <div>
+                      <div class="font-semibold text-sm">Email Verification</div>
+                      <div class="text-xs text-gray-500">Your email is verified</div>
+                    </div>
+                  </div>
+                  <span class="px-3 py-1 rounded-full bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 text-xs font-semibold">Verified</span>
+                </div>
+                <div class="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-warning-100 dark:bg-warning-900/30 flex items-center justify-center">
+                      <i data-lucide="log-in" class="w-5 h-5 text-warning-600"></i>
+                    </div>
+                    <div>
+                      <div class="font-semibold text-sm">Active Sessions</div>
+                      <div class="text-xs text-gray-500">3 devices currently logged in</div>
+                    </div>
+                  </div>
+                  <button class="text-sm text-primary-600 hover:text-primary-700 font-semibold">Manage</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Billing -->
+            <section id="billing" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-secondary-100 dark:bg-secondary-900/30 flex items-center justify-center">
+                  <i data-lucide="credit-card" class="w-5 h-5 text-secondary-600"></i>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold">Billing</h2>
+                  <p class="text-sm text-gray-500">Manage payment methods and invoices</p>
+                </div>
+              </div>
+              <div class="space-y-4">
+                <div class="p-4 rounded-xl bg-gradient-to-br from-gray-900 to-gray-700 text-white relative overflow-hidden">
+                  <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                  <div class="relative">
+                    <div class="flex items-center justify-between mb-8">
+                      <i data-lucide="credit-card" class="w-8 h-8"></i>
+                      <span class="text-xs font-semibold">VISA</span>
+                    </div>
+                    <div class="text-lg font-mono tracking-wider mb-4">•••• •••• •••• 4242</div>
+                    <div class="flex justify-between text-xs">
+                      <div>
+                        <div class="opacity-70">Card Holder</div>
+                        <div class="font-semibold">John Doe</div>
+                      </div>
+                      <div>
+                        <div class="opacity-70">Expires</div>
+                        <div class="font-semibold">12/27</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button class="w-full p-3 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 text-sm font-semibold hover:border-primary-500 transition-colors flex items-center justify-center gap-2">
+                  <i data-lucide="plus" class="w-4 h-4"></i> Add Payment Method
+                </button>
+                <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h3 class="font-semibold mb-3">Recent Invoices</h3>
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      <div>
+                        <div class="font-semibold text-sm">Invoice #INV-2025-001</div>
+                        <div class="text-xs text-gray-500">Jan 1, 2025</div>
+                      </div>
+                      <div class="text-right">
+                        <div class="font-semibold">$99.00</div>
+                        <span class="text-xs text-success-500">Paid</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      <div>
+                        <div class="font-semibold text-sm">Invoice #INV-2024-012</div>
+                        <div class="text-xs text-gray-500">Dec 1, 2024</div>
+                      </div>
+                      <div class="text-right">
+                        <div class="font-semibold">$99.00</div>
+                        <span class="text-xs text-success-500">Paid</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Subscription -->
+            <section id="subscription" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
+                  <i data-lucide="crown" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold">Subscription</h2>
+                  <p class="text-sm text-gray-500">Manage your plan</p>
+                </div>
+              </div>
+              <div class="p-6 rounded-2xl gradient-bg text-white relative overflow-hidden mb-4">
+                <div class="absolute inset-0 opacity-20">
+                  <div class="absolute top-0 right-0 w-40 h-40 bg-white rounded-full blur-3xl"></div>
+                </div>
+                <div class="relative">
+                  <div class="flex items-center justify-between mb-4">
+                    <div>
+                      <div class="text-sm opacity-90">Current Plan</div>
+                      <div class="text-3xl font-bold">Professional</div>
+                    </div>
+                    <i data-lucide="crown" class="w-12 h-12 opacity-50"></i>
+                  </div>
+                  <div class="text-2xl font-bold mb-1">$99<span class="text-base font-normal opacity-80">/month</span></div>
+                  <p class="text-sm opacity-90 mb-4">Renews on Feb 1, 2025</p>
+                  <div class="flex gap-2">
+                    <button class="bg-white text-primary-600 font-semibold px-4 py-2 rounded-xl text-sm hover:scale-105 transition-transform">Upgrade Plan</button>
+                    <button class="bg-white/20 backdrop-blur text-white font-semibold px-4 py-2 rounded-xl text-sm hover:bg-white/30 transition-colors">Cancel</button>
+                  </div>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 text-center">
+                  <div class="text-2xl font-bold">8,716</div>
+                  <div class="text-xs text-gray-500">Messages Used</div>
+                  <div class="text-xs text-gray-400 mt-1">of 10,000</div>
+                </div>
+                <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 text-center">
+                  <div class="text-2xl font-bold">847</div>
+                  <div class="text-xs text-gray-500">Voice Minutes</div>
+                  <div class="text-xs text-gray-400 mt-1">of 1,000</div>
+                </div>
+                <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 text-center">
+                  <div class="text-2xl font-bold">2,156</div>
+                  <div class="text-xs text-gray-500">Documents</div>
+                  <div class="text-xs text-gray-400 mt-1">unlimited</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Preferences -->
+            <section id="preferences" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center">
+                  <i data-lucide="sliders" class="w-5 h-5 text-pink-600"></i>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold">Preferences</h2>
+                  <p class="text-sm text-gray-500">Customize your experience</p>
+                </div>
+              </div>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium mb-2">Language</label>
+                  <select class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none">
+                    <option>English (US)</option>
+                    <option>English (UK)</option>
+                    <option>Spanish</option>
+                    <option>French</option>
+                    <option>German</option>
+                    <option>Hindi</option>
+                    <option>Chinese (Simplified)</option>
+                    <option>Japanese</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Timezone</label>
+                  <select class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none">
+                    <option>UTC-5 (Eastern Time)</option>
+                    <option>UTC-6 (Central Time)</option>
+                    <option>UTC-7 (Mountain Time)</option>
+                    <option>UTC-8 (Pacific Time)</option>
+                    <option>UTC+0 (GMT)</option>
+                    <option>UTC+1 (CET)</option>
+                    <option>UTC+5:30 (IST)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Date Format</label>
+                  <select class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none">
+                    <option>MM/DD/YYYY</option>
+                    <option>DD/MM/YYYY</option>
+                    <option>YYYY-MM-DD</option>
+                  </select>
+                </div>
+                <div class="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
+                  <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                    <div>
+                      <div class="font-semibold text-sm">Dark Mode</div>
+                      <div class="text-xs text-gray-500">Use dark theme</div>
+                    </div>
+                    <div class="toggle" id="darkModeToggle" data-toggle></div>
+                  </div>
+                  <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                    <div>
+                      <div class="font-semibold text-sm">Email Notifications</div>
+                      <div class="text-xs text-gray-500">Receive updates via email</div>
+                    </div>
+                    <div class="toggle active" data-toggle></div>
+                  </div>
+                  <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                    <div>
+                      <div class="font-semibold text-sm">Push Notifications</div>
+                      <div class="text-xs text-gray-500">Browser push alerts</div>
+                    </div>
+                    <div class="toggle active" data-toggle></div>
+                  </div>
+                  <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                    <div>
+                      <div class="font-semibold text-sm">Marketing Emails</div>
+                      <div class="text-xs text-gray-500">Product updates & tips</div>
+                    </div>
+                    <div class="toggle" data-toggle></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+  const html = document.documentElement;
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  if (savedTheme === 'dark') html.classList.add('dark');
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    lucide.createIcons();
+  });
+
+  // Sidebar toggle
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('-translate-x-full');
+    sidebarOverlay.classList.toggle('hidden');
+  });
+  sidebarOverlay.addEventListener('click', () => {
+    sidebar.classList.add('-translate-x-full');
+    sidebarOverlay.classList.add('hidden');
+  });
+
+  // Toggle switches
+  document.querySelectorAll('[data-toggle]').forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      toggle.classList.toggle('active');
+    });
+  });
+
+  // Profile nav active state
+  const navItems = document.querySelectorAll('.profile-nav-item');
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      navItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
