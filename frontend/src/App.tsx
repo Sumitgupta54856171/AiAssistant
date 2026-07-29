@@ -6,6 +6,7 @@ import BusinessSelection from "./pages/BusinessSelection"
 import BusinessDescription from "./pages/BusinessDescription"
 import AddLogo from "./pages/AddLogo"
 import DashboardPage from "./pages/DashboardPage"
+import DocumentGenerator from "./pages/DocumentGenerator"
 import { AppShell } from "./components/AppShell"
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/business-description" element={<BusinessDescription />} />
         <Route path="/add-logo" element={<AddLogo />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/document-generator" element={<DocumentGenerator />} />
         <Route path="/settings" element={<AppShell />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
