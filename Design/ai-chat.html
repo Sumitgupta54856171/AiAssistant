@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Chat — OmniAssist AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.3); }
+  .dark .glass { background: rgba(17,24,39,0.7); border: 1px solid rgba(255,255,255,0.1); }
+  .gradient-text { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .gradient-bg { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); }
+  .sidebar-link { transition: all 0.2s; }
+  .sidebar-link:hover, .sidebar-link.active { background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(124,58,237,0.1)); color: #2563eb; }
+  .dark .sidebar-link:hover, .dark .sidebar-link.active { background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(124,58,237,0.2)); color: #60a5fa; }
+  .chat-bubble { max-width: 75%; animation: fadeIn 0.3s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .typing-dot { animation: typing 1.4s infinite; }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typing { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-8px); opacity: 1; } }
+  .conversation-item.active { background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(124,58,237,0.1)); border-left: 3px solid #2563eb; }
+  .data-card { transition: all 0.3s; }
+  .data-card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(37,99,235,0.2); }
+  .action-chip { transition: all 0.2s; }
+  .action-chip:hover { transform: scale(1.05); }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  .dark ::-webkit-scrollbar-thumb { background: #475569; }
+</style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+
+<div class="flex h-screen overflow-hidden">
+  <!-- ============== SIDEBAR ============== -->
+  <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+    <div class="h-16 px-6 flex items-center border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-lg">
+          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-lg font-bold gradient-text">OmniAssist</span>
+      </a>
+    </div>
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
+      </a>
+      <a href="ai-chat.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium">
+        <i data-lucide="message-circle" class="w-5 h-5"></i> AI Chat
+      </a>
+      <a href="voice-ai.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+        <i data-lucide="phone-call" class="w-5 h-5"></i> Voice AI
+      </a>
+      <a href="document-generator.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+        <i data-lucide="file-text" class="w-5 h-5"></i> Documents
+      </a>
+      <a href="knowledge-base.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+        <i data-lucide="database" class="w-5 h-5"></i> Knowledge Base
+      </a>
+      <a href="analytics.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+        <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Analytics
+      </a>
+      <a href="settings.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+        <i data-lucide="settings" class="w-5 h-5"></i> Settings
+      </a>
+    </nav>
+  </aside>
+
+  <div id="sidebarOverlay" class="hidden lg:hidden fixed inset-0 bg-black/50 z-30"></div>
+
+  <!-- ============== CHAT LAYOUT ============== -->
+  <div class="flex-1 flex min-w-0">
+    <!-- Conversations List -->
+    <div id="conversationsPanel" class="w-80 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex flex-col flex-shrink-0">
+      <div class="p-4 border-b border-gray-200 dark:border-gray-800">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-lg font-bold">Conversations</h2>
+          <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <div class="relative">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input type="text" placeholder="Search conversations..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20" />
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto">
+        <div class="conversation-item active p-4 border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 font-bold flex-shrink-0">SJ</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-sm truncate">Sarah Johnson</span>
+                <span class="text-xs text-gray-500">2m</span>
+              </div>
+              <p class="text-xs text-gray-500 truncate">I need to book an appointment...</p>
+              <span class="inline-block mt-1 px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs">Active</span>
+            </div>
+          </div>
+        </div>
+        <div class="conversation-item p-4 border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-full bg-secondary-100 dark:bg-secondary-900/30 flex items-center justify-center text-secondary-600 font-bold flex-shrink-0">MC</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-sm truncate">Mike Chen</span>
+                <span class="text-xs text-gray-500">1h</span>
+              </div>
+              <p class="text-xs text-gray-500 truncate">Thanks for the help!</p>
+            </div>
+          </div>
+        </div>
+        <div class="conversation-item p-4 border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-full bg-success-100 dark:bg-success-900/30 flex items-center justify-center text-success-600 font-bold flex-shrink-0">EW</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-sm truncate">Emma Wilson</span>
+                <span class="text-xs text-gray-500">3h</span>
+              </div>
+              <p class="text-xs text-gray-500 truncate">What are your visiting hours?</p>
+            </div>
+          </div>
+        </div>
+        <div class="conversation-item p-4 border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-full bg-warning-100 dark:bg-warning-900/30 flex items-center justify-center text-warning-600 font-bold flex-shrink-0">RP</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-sm truncate">Robert Park</span>
+                <span class="text-xs text-gray-500">1d</span>
+              </div>
+              <p class="text-xs text-gray-500 truncate">Can I get a refund?</p>
+            </div>
+          </div>
+        </div>
+        <div class="conversation-item p-4 border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center text-pink-600 font-bold flex-shrink-0">LA</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between">
+                <span class="font-semibold text-sm truncate">Lisa Anderson</span>
+                <span class="text-xs text-gray-500">2d</span>
+              </div>
+              <p class="text-xs text-gray-500 truncate">Order #2847 confirmed</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-950">
+      <!-- Chat Header -->
+      <header class="h-16 px-4 sm:px-6 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <button id="conversationsToggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          <button id="sidebarToggle" class="hidden lg:block p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+            <i data-lucide="panel-left" class="w-5 h-5"></i>
+          </button>
+          <div class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 font-bold">SJ</div>
+          <div>
+            <div class="font-semibold text-sm">Sarah Johnson</div>
+            <div class="text-xs text-success-500 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 bg-success-500 rounded-full"></span>
+              Online
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Voice call">
+            <i data-lucide="phone" class="w-5 h-5"></i>
+          </button>
+          <button class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Video call">
+            <i data-lucide="video" class="w-5 h-5"></i>
+          </button>
+          <button id="profileToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Customer info">
+            <i data-lucide="info" class="w-5 h-5"></i>
+          </button>
+          <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+            <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+            <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Messages -->
+      <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+        <!-- Date Divider -->
+        <div class="flex items-center justify-center">
+          <span class="px-3 py-1 rounded-full bg-gray-200 dark:bg-gray-800 text-xs text-gray-600 dark:text-gray-400">Today</span>
+        </div>
+
+        <!-- Customer Message -->
+        <div class="flex items-end gap-2">
+          <div class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 font-bold text-xs flex-shrink-0">SJ</div>
+          <div class="chat-bubble bg-white dark:bg-gray-800 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm">
+            <p class="text-sm">Hi! I need to book an appointment with Dr. Smith for next week.</p>
+            <span class="text-xs text-gray-400 mt-1 block">10:23 AM</span>
+          </div>
+        </div>
+
+        <!-- AI Message -->
+        <div class="flex items-end gap-2 justify-end">
+          <div class="chat-bubble gradient-bg text-white rounded-2xl rounded-br-md px-4 py-3 shadow-lg">
+            <p class="text-sm">Hello Sarah! 👋 I'd be happy to help you book an appointment with Dr. Smith. Dr. Smith has availability on:</p>
+            <ul class="text-sm mt-2 space-y-1 ml-4 list-disc">
+              <li>Monday, Dec 9 - 10:00 AM, 2:00 PM</li>
+              <li>Tuesday, Dec 10 - 11:00 AM, 3:30 PM</li>
+              <li>Wednesday, Dec 11 - 9:00 AM, 4:00 PM</li>
+            </ul>
+            <p class="text-sm mt-2">Which slot works best for you?</p>
+            <span class="text-xs opacity-70 mt-1 block">10:23 AM ✓✓</span>
+          </div>
+          <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
+            <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+          </div>
+        </div>
+
+        <!-- Customer Message -->
+        <div class="flex items-end gap-2">
+          <div class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 font-bold text-xs flex-shrink-0">SJ</div>
+          <div class="chat-bubble bg-white dark:bg-gray-800 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm">
+            <p class="text-sm">Tuesday at 11:00 AM works for me.</p>
+            <span class="text-xs text-gray-400 mt-1 block">10:25 AM</span>
+          </div>
+        </div>
+
+        <!-- AI Message with Database Action -->
+        <div class="flex items-end gap-2 justify-end">
+          <div class="chat-bubble gradient-bg text-white rounded-2xl rounded-br-md px-4 py-3 shadow-lg">
+            <div class="flex items-center gap-2 mb-2 text-xs opacity-90">
+              <i data-lucide="database" class="w-3 h-3"></i>
+              <span>Queried database: appointments table</span>
+            </div>
+            <p class="text-sm">Perfect! I've booked your appointment for Tuesday, Dec 10 at 11:00 AM with Dr. Smith. ✅</p>
+            <div class="mt-3 p-2 rounded-lg bg-white/10 backdrop-blur text-xs">
+              <div class="flex items-center justify-between">
+                <span>📅 Appointment #APT-3847</span>
+                <span class="opacity-70">Saved to DB</span>
+              </div>
+            </div>
+            <span class="text-xs opacity-70 mt-1 block">10:25 AM ✓✓</span>
+          </div>
+          <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
+            <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+          </div>
+        </div>
+
+        <!-- Customer asks for invoice summary -->
+        <div class="flex items-end gap-2">
+          <div class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 font-bold text-xs flex-shrink-0">SJ</div>
+          <div class="chat-bubble bg-white dark:bg-gray-800 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm">
+            <p class="text-sm">Can you give me a summary of this week's invoices?</p>
+            <span class="text-xs text-gray-400 mt-1 block">10:30 AM</span>
+          </div>
+        </div>
+
+        <!-- AI Response with Data Card -->
+        <div class="flex items-end gap-2 justify-end">
+          <div class="chat-bubble gradient-bg text-white rounded-2xl rounded-br-md px-4 py-3 shadow-lg max-w-md">
+            <div class="flex items-center gap-2 mb-2 text-xs opacity-90">
+              <i data-lucide="database" class="w-3 h-3"></i>
+              <span>Queried database: invoices table (47 records)</span>
+            </div>
+            <p class="text-sm font-semibold mb-2">📊 This Week's Invoice Summary</p>
+            <div class="bg-white/10 backdrop-blur rounded-lg p-3 space-y-2 text-xs">
+              <div class="flex justify-between"><span>Total Invoices:</span><span class="font-bold">47</span></div>
+              <div class="flex justify-between"><span>Total Revenue:</span><span class="font-bold">$12,847.50</span></div>
+              <div class="flex justify-between"><span>Paid:</span><span class="font-bold text-green-200">42 ($11,420)</span></div>
+              <div class="flex justify-between"><span>Pending:</span><span class="font-bold text-yellow-200">5 ($1,427.50)</span></div>
+              <div class="flex justify-between"><span>Avg. Invoice:</span><span class="font-bold">$273.35</span></div>
+            </div>
+            <p class="text-sm mt-3">Would you like me to send this report via WhatsApp, email, or generate a PDF?</p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <button class="action-chip px-3 py-1.5 rounded-full bg-white/20 backdrop-blur text-xs font-semibold flex items-center gap-1">
+                <i data-lucide="message-circle" class="w-3 h-3"></i> Send via WhatsApp
+              </button>
+              <button class="action-chip px-3 py-1.5 rounded-full bg-white/20 backdrop-blur text-xs font-semibold flex items-center gap-1">
+                <i data-lucide="file-text" class="w-3 h-3"></i> Generate PDF
+              </button>
+              <button class="action-chip px-3 py-1.5 rounded-full bg-white/20 backdrop-blur text-xs font-semibold flex items-center gap-1">
+                <i data-lucide="phone" class="w-3 h-3"></i> Voice Summary
+              </button>
+            </div>
+            <span class="text-xs opacity-70 mt-2 block">10:30 AM ✓✓</span>
+          </div>
+          <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
+            <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggested Prompts -->
+      <div class="px-4 sm:px-6 pb-2">
+        <div class="flex gap-2 overflow-x-auto pb-2">
+          <button class="action-chip flex-shrink-0 px-3 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs hover:border-primary-500 transition-colors flex items-center gap-1">
+            <i data-lucide="bar-chart-3" class="w-3 h-3"></i> Weekly summary
+          </button>
+          <button class="action-chip flex-shrink-0 px-3 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs hover:border-primary-500 transition-colors flex items-center gap-1">
+            <i data-lucide="receipt" class="w-3 h-3"></i> Latest invoices
+          </button>
+          <button class="action-chip flex-shrink-0 px-3 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs hover:border-primary-500 transition-colors flex items-center gap-1">
+            <i data-lucide="users" class="w-3 h-3"></i> New customers
+          </button>
+          <button class="action-chip flex-shrink-0 px-3 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs hover:border-primary-500 transition-colors flex items-center gap-1">
+            <i data-lucide="calendar" class="w-3 h-3"></i> Today's appointments
+          </button>
+          <button class="action-chip flex-shrink-0 px-3 py-1.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs hover:border-primary-500 transition-colors flex items-center gap-1">
+            <i data-lucide="file-plus" class="w-3 h-3"></i> Create invoice
+          </button>
+        </div>
+      </div>
+
+      <!-- Input Area -->
+      <div class="p-4 sm:p-6 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+        <div class="flex items-end gap-2">
+          <button class="p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500" title="Attach file">
+            <i data-lucide="paperclip" class="w-5 h-5"></i>
+          </button>
+          <button class="p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500" title="Emoji">
+            <i data-lucide="smile" class="w-5 h-5"></i>
+          </button>
+          <div class="flex-1 relative">
+            <textarea id="messageInput" rows="1" placeholder="Ask anything: 'Show this week's invoices', 'Create a new customer', 'Send WhatsApp to...'..." class="w-full px-4 py-3 pr-12 rounded-2xl bg-gray-100 dark:bg-gray-800 resize-none focus:outline-none focus:ring-2 focus:ring-primary-500/20 max-h-32"></textarea>
+            <button id="voiceBtn" class="absolute right-2 bottom-2 p-2 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500" title="Voice input">
+              <i data-lucide="mic" class="w-5 h-5"></i>
+            </button>
+          </div>
+          <button id="sendBtn" class="p-3 rounded-xl gradient-bg text-white shadow-lg hover:scale-105 transition-transform">
+            <i data-lucide="send" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <div class="mt-2 flex items-center gap-2 text-xs text-gray-500">
+          <i data-lucide="database" class="w-3 h-3 text-success-500"></i>
+          <span>Connected to MySQL • 4 tables available</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Profile Panel -->
+    <aside id="profilePanel" class="hidden xl:flex w-80 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex-col flex-shrink-0">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-800 text-center">
+        <div class="w-20 h-20 mx-auto rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 font-bold text-2xl mb-3">SJ</div>
+        <h3 class="font-bold text-lg">Sarah Johnson</h3>
+        <p class="text-sm text-gray-500">Patient ID: #P-2847</p>
+        <div class="flex justify-center gap-2 mt-4">
+          <button class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700" title="Call"><i data-lucide="phone" class="w-4 h-4"></i></button>
+          <button class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700" title="WhatsApp"><i data-lucide="message-circle" class="w-4 h-4"></i></button>
+          <button class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700" title="Email"><i data-lucide="mail" class="w-4 h-4"></i></button>
+          <button class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700" title="Video"><i data-lucide="video" class="w-4 h-4"></i></button>
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto p-6 space-y-4">
+        <div>
+          <h4 class="text-xs font-semibold text-gray-400 uppercase mb-2">Contact Info</h4>
+          <div class="space-y-2 text-sm">
+            <div class="flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4 text-gray-400"></i> sarah.j@email.com</div>
+            <div class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-gray-400"></i> +1 (555) 123-4567</div>
+            <div class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-gray-400"></i> New York, USA</div>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xs font-semibold text-gray-400 uppercase mb-2 flex items-center justify-between">
+            <span>Recent Invoices</span>
+            <span class="text-primary-600 normal-case">From DB</span>
+          </h4>
+          <div class="space-y-2">
+            <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
+              <div class="flex justify-between items-start">
+                <div>
+                  <div class="text-sm font-semibold">INV-2847</div>
+                  <div class="text-xs text-gray-500">Jan 15, 2025</div>
+                </div>
+                <div class="text-sm font-bold text-success-500">$341.00</div>
+              </div>
+            </div>
+            <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
+              <div class="flex justify-between items-start">
+                <div>
+                  <div class="text-sm font-semibold">INV-2103</div>
+                  <div class="text-xs text-gray-500">Dec 28, 2024</div>
+                </div>
+                <div class="text-sm font-bold text-success-500">$520.00</div>
+              </div>
+            </div>
+            <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
+              <div class="flex justify-between items-start">
+                <div>
+                  <div class="text-sm font-semibold">INV-1847</div>
+                  <div class="text-xs text-gray-500">Nov 15, 2024</div>
+                </div>
+                <div class="text-sm font-bold text-success-500">$180.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xs font-semibold text-gray-400 uppercase mb-2">Tags</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-2 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs">VIP</span>
+            <span class="px-2 py-1 rounded-full bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 text-xs">Returning</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+  const html = document.documentElement;
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  if (savedTheme === 'dark') html.classList.add('dark');
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    lucide.createIcons();
+  });
+
+  // Sidebar toggle
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const conversationsPanel = document.getElementById('conversationsPanel');
+  const conversationsToggle = document.getElementById('conversationsToggle');
+
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('-translate-x-full');
+    sidebarOverlay.classList.toggle('hidden');
+  });
+  sidebarOverlay.addEventListener('click', () => {
+    sidebar.classList.add('-translate-x-full');
+    sidebarOverlay.classList.add('hidden');
+  });
+  conversationsToggle.addEventListener('click', () => {
+    conversationsPanel.classList.toggle('hidden');
+  });
+
+  // AI Response Database - simulates database queries
+  const dbResponses = {
+    'invoice': {
+      icon: 'database',
+      query: 'SELECT * FROM invoices WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)',
+      text: '📊 This Week\'s Invoice Summary',
+      data: [
+        ['Total Invoices:', '47'],
+        ['Total Revenue:', '$12,847.50'],
+        ['Paid:', '42 ($11,420)'],
+        ['Pending:', '5 ($1,427.50)'],
+        ['Avg. Invoice:', '$273.35']
+      ],
+      followup: 'Would you like me to send this report via WhatsApp, email, or generate a PDF?'
+    },
+    'customer': {
+      icon: 'database',
+      query: 'SELECT * FROM customers ORDER BY created_at DESC LIMIT 10',
+      text: '👥 Latest Customers',
+      data: [
+        ['Sarah Johnson', 'Jan 15, 2025'],
+        ['Mike Chen', 'Jan 14, 2025'],
+        ['Emma Wilson', 'Jan 13, 2025'],
+        ['Robert Park', 'Jan 12, 2025'],
+        ['Lisa Anderson', 'Jan 11, 2025']
+      ],
+      followup: 'I can create a new customer record, send welcome WhatsApp messages, or generate a customer report.'
+    },
+    'appointment': {
+      icon: 'database',
+      query: 'SELECT * FROM appointments WHERE date = CURDATE()',
+      text: '📅 Today\'s Appointments',
+      data: [
+        ['09:00 AM', 'John Smith', 'Dr. Lee'],
+        ['10:30 AM', 'Mary Johnson', 'Dr. Smith'],
+        ['11:00 AM', 'Sarah Johnson', 'Dr. Smith'],
+        ['02:00 PM', 'Tom Brown', 'Dr. Lee'],
+        ['04:30 PM', 'Lisa Davis', 'Dr. Smith']
+      ],
+      followup: 'I can send WhatsApp reminders, reschedule, or create new appointments.'
+    },
+    'order': {
+      icon: 'database',
+      query: 'SELECT * FROM orders WHERE status = "pending"',
+      text: '📦 Pending Orders',
+      data: [
+        ['#ORD-3847', 'Sarah Johnson', '$245.00'],
+        ['#ORD-3846', 'Mike Chen', '$180.00'],
+        ['#ORD-3845', 'Emma Wilson', '$520.00'],
+        ['#ORD-3844', 'Robert Park', '$95.00']
+      ],
+      followup: 'I can update order status, send tracking via WhatsApp, or generate invoices.'
+    },
+    'default': {
+      icon: 'sparkles',
+      query: 'AI processing your request...',
+      text: 'I can help you with that!',
+      data: [],
+      followup: 'I can query your database, generate documents, send WhatsApp messages, or make voice calls. What would you like to do?'
+    }
+  };
+
+  function detectIntent(text) {
+    const lower = text.toLowerCase();
+    if (lower.includes('invoice') || lower.includes('billing') || lower.includes('payment')) return 'invoice';
+    if (lower.includes('customer') || lower.includes('client') || lower.includes('user')) return 'customer';
+    if (lower.includes('appointment') || lower.includes('booking') || lower.includes('schedule')) return 'appointment';
+    if (lower.includes('order')) return 'order';
+    return 'default';
+  }
+
+  function buildAIBubble(intent) {
+    const r = dbResponses[intent];
+    let dataHtml = '';
+    if (r.data.length > 0) {
+      dataHtml = '<div class="bg-white/10 backdrop-blur rounded-lg p-3 space-y-1.5 text-xs">';
+      r.data.forEach(row => {
+        if (row.length === 2) {
+          dataHtml += `<div class="flex justify-between"><span>${row[0]}</span><span class="font-bold">${row[1]}</span></div>`;
+        } else {
+          dataHtml += `<div class="flex justify-between items-center"><span class="font-semibold">${row[0]}</span><span class="text-xs opacity-80">${row[1]}</span><span class="font-bold">${row[2]}</span></div>`;
+        }
+      });
+      dataHtml += '</div>';
+    }
+    return `
+      <div class="flex items-end gap-2 justify-end">
+        <div class="chat-bubble gradient-bg text-white rounded-2xl rounded-br-md px-4 py-3 shadow-lg max-w-md">
+          <div class="flex items-center gap-2 mb-2 text-xs opacity-90">
+            <i data-lucide="${r.icon}" class="w-3 h-3"></i>
+            <span>${r.query}</span>
+          </div>
+          <p class="text-sm font-semibold mb-2">${r.text}</p>
+          ${dataHtml}
+          <p class="text-sm mt-3">${r.followup}</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button class="action-chip px-3 py-1.5 rounded-full bg-white/20 backdrop-blur text-xs font-semibold flex items-center gap-1" onclick="handleAction('whatsapp')">
+              <i data-lucide="message-circle" class="w-3 h-3"></i> WhatsApp
+            </button>
+            <button class="action-chip px-3 py-1.5 rounded-full bg-white/20 backdrop-blur text-xs font-semibold flex items-center gap-1" onclick="handleAction('pdf')">
+              <i data-lucide="file-text" class="w-3 h-3"></i> PDF
+            </button>
+            <button class="action-chip px-3 py-1.5 rounded-full bg-white/20 backdrop-blur text-xs font-semibold flex items-center gap-1" onclick="handleAction('voice')">
+              <i data-lucide="phone" class="w-3 h-3"></i> Voice
+            </button>
+          </div>
+          <span class="text-xs opacity-70 mt-2 block">Just now ✓✓</span>
+        </div>
+        <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
+          <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+        </div>
+      </div>
+    `;
+  }
+
+  function handleAction(type) {
+    const messages = {
+      whatsapp: '✅ WhatsApp message sent successfully to the customer!',
+      pdf: '✅ PDF report generated and downloaded!',
+      voice: '✅ Voice summary call initiated!'
+    };
+    const msg = document.createElement('div');
+    msg.className = 'flex items-end gap-2 justify-end';
+    msg.innerHTML = `
+      <div class="chat-bubble gradient-bg text-white rounded-2xl rounded-br-md px-4 py-3 shadow-lg">
+        <p class="text-sm">${messages[type]}</p>
+        <span class="text-xs opacity-70 mt-1 block">Just now ✓✓</span>
+      </div>
+      <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
+        <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+      </div>
+    `;
+    messagesContainer.appendChild(msg);
+    lucide.createIcons();
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Send message
+  const sendBtn = document.getElementById('sendBtn');
+  const messageInput = document.getElementById('messageInput');
+  const messagesContainer = document.getElementById('messagesContainer');
+
+  function sendMessage() {
+    const text = messageInput.value.trim();
+    if (!text) return;
+    const msg = document.createElement('div');
+    msg.className = 'flex items-end gap-2 justify-end';
+    msg.innerHTML = `
+      <div class="chat-bubble gradient-bg text-white rounded-2xl rounded-br-md px-4 py-3 shadow-lg">
+        <p class="text-sm">${text}</p>
+        <span class="text-xs opacity-70 mt-1 block">Just now ✓</span>
+      </div>
+      <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
+        <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+      </div>
+    `;
+    messagesContainer.appendChild(msg);
+    messageInput.value = '';
+    lucide.createIcons();
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // Show typing indicator
+    const typing = document.createElement('div');
+    typing.className = 'flex items-end gap-2 justify-end';
+    typing.id = 'typingIndicator';
+    typing.innerHTML = `
+      <div class="chat-bubble gradient-bg text-white rounded-2xl rounded-br-md px-4 py-3 shadow-lg">
+        <div class="flex items-center gap-1">
+          <span class="typing-dot w-2 h-2 bg-white rounded-full"></span>
+          <span class="typing-dot w-2 h-2 bg-white rounded-full"></span>
+          <span class="typing-dot w-2 h-2 bg-white rounded-full"></span>
+        </div>
+      </div>
+      <div class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center flex-shrink-0">
+        <i data-lucide="bot" class="w-4 h-4 text-white"></i>
+      </div>
+    `;
+    messagesContainer.appendChild(typing);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // Simulate AI response with database query
+    setTimeout(() => {
+      const typingEl = document.getElementById('typingIndicator');
+      if (typingEl) typingEl.remove();
+      const intent = detectIntent(text);
+      messagesContainer.insertAdjacentHTML('beforeend', buildAIBubble(intent));
+      lucide.createIcons();
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 1500);
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  messageInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Auto-resize textarea
+  messageInput.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 128) + 'px';
+  });
+
+  // Suggested prompt clicks
+  document.querySelectorAll('.action-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      const text = this.textContent.trim();
+      messageInput.value = text;
+      sendMessage();
+    });
+  });
+</script>
+</body>
+</html>

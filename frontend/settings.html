@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Settings — OmniAssist AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.3); }
+  .dark .glass { background: rgba(17,24,39,0.7); border: 1px solid rgba(255,255,255,0.1); }
+  .gradient-text { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .gradient-bg { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); }
+  .sidebar-link { transition: all 0.2s; }
+  .sidebar-link:hover, .sidebar-link.active { background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(124,58,237,0.1)); color: #2563eb; }
+  .dark .sidebar-link:hover, .dark .sidebar-link.active { background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(124,58,237,0.2)); color: #60a5fa; }
+  .settings-nav-item { transition: all 0.2s; border-left: 3px solid transparent; }
+  .settings-nav-item:hover { background: linear-gradient(135deg, rgba(37,99,235,0.05), rgba(124,58,237,0.05)); }
+  .settings-nav-item.active { background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(124,58,237,0.1)); color: #2563eb; border-left-color: #2563eb; }
+  .dark .settings-nav-item.active { background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(124,58,237,0.2)); color: #60a5fa; border-left-color: #60a5fa; }
+  .toggle { width: 44px; height: 24px; background: #cbd5e1; border-radius: 12px; position: relative; cursor: pointer; transition: all 0.3s; flex-shrink: 0; }
+  .toggle.active { background: linear-gradient(135deg, #2563EB, #7C3AED); }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+  .toggle.active::after { left: 22px; }
+  .input-field { transition: all 0.2s; }
+  .input-field:focus { transform: translateY(-1px); }
+  .db-card { transition: all 0.3s; cursor: pointer; }
+  .db-card:hover { transform: translateY(-2px); }
+  .db-card.selected { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
+  .pulse-dot { animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  .dark ::-webkit-scrollbar-thumb { background: #475569; }
+</style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+
+<div class="flex h-screen overflow-hidden">
+  <!-- ============== SIDEBAR ============== -->
+  <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+    <div class="h-16 px-6 flex items-center border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-lg">
+          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-lg font-bold gradient-text">OmniAssist</span>
+      </a>
+    </div>
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard</a>
+      <a href="ai-chat.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="message-circle" class="w-5 h-5"></i> AI Chat</a>
+      <a href="voice-ai.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="phone-call" class="w-5 h-5"></i> Voice AI</a>
+      <a href="document-generator.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="file-text" class="w-5 h-5"></i> Documents</a>
+      <a href="knowledge-base.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="database" class="w-5 h-5"></i> Knowledge Base</a>
+      <a href="analytics.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> Analytics</a>
+      <a href="settings.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium"><i data-lucide="settings" class="w-5 h-5"></i> Settings</a>
+    </nav>
+  </aside>
+  <div id="sidebarOverlay" class="hidden lg:hidden fixed inset-0 bg-black/50 z-30"></div>
+
+  <!-- ============== MAIN CONTENT ============== -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="h-16 px-4 sm:px-6 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <button id="sidebarToggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="menu" class="w-5 h-5"></i></button>
+        <h1 class="text-lg sm:text-xl font-bold">Settings</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+          <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+          <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+        </button>
+        <a href="profile.html" class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-white text-sm font-bold">JD</a>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <!-- Settings Nav -->
+          <aside class="lg:col-span-1">
+            <div class="glass rounded-2xl p-4 border border-gray-200 dark:border-gray-800 sticky top-4">
+              <nav class="space-y-1">
+                <a href="#business" class="settings-nav-item active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium">
+                  <i data-lucide="building" class="w-4 h-4"></i> Business Info
+                </a>
+                <a href="#brand" class="settings-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <i data-lucide="palette" class="w-4 h-4"></i> Brand & Logo
+                </a>
+                <a href="#database" class="settings-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <i data-lucide="database" class="w-4 h-4"></i> Database
+                </a>
+                <a href="#whatsapp" class="settings-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp
+                </a>
+                <a href="#voice" class="settings-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <i data-lucide="phone" class="w-4 h-4"></i> Voice Settings
+                </a>
+                <a href="#ai" class="settings-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <i data-lucide="sparkles" class="w-4 h-4"></i> AI Configuration
+                </a>
+                <a href="#users" class="settings-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <i data-lucide="users" class="w-4 h-4"></i> Users & Roles
+                </a>
+                <a href="#api" class="settings-nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <i data-lucide="key" class="w-4 h-4"></i> API Keys
+                </a>
+              </nav>
+            </div>
+          </aside>
+
+          <!-- Settings Content -->
+          <div class="lg:col-span-3 space-y-6">
+
+            <!-- Business Information -->
+            <section id="business" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                  <i data-lucide="building" class="w-5 h-5 text-primary-600"></i>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold">Business Information</h2>
+                  <p class="text-sm text-gray-500">Update your business details</p>
+                </div>
+              </div>
+              <form class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Business Name</label>
+                    <input type="text" value="MediCare Hospital" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Business Type</label>
+                    <select class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none">
+                      <option>Hospital</option>
+                      <option>School</option>
+                      <option>Grocery Store</option>
+                      <option>Hotel</option>
+                      <option>Restaurant</option>
+                      <option>Retail Shop</option>
+                      <option>Coaching Institute</option>
+                      <option>Clinic</option>
+                      <option>Real Estate</option>
+                      <option>Automobile</option>
+                      <option>Custom</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Email</label>
+                    <input type="email" value="contact@medicare.com" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Phone</label>
+                    <input type="tel" value="+1 (555) 123-4567" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Address</label>
+                  <textarea rows="2" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none">123 Healthcare Ave, Medical District, New York, USA</textarea>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-2">City</label>
+                    <input type="text" value="New York" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-2">State</label>
+                    <input type="text" value="NY" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-2">ZIP Code</label>
+                    <input type="text" value="10001" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                </div>
+                <div class="flex justify-end pt-4">
+                  <button type="button" class="gradient-bg text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg hover:scale-[1.02] transition-transform">Save Changes</button>
+                </div>
+              </form>
+            </section>
+
+            <!-- Brand & Logo -->
+            <section id="brand" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-secondary-100 dark:bg-secondary-900/30 flex items-center justify-center">
+                  <i data-lucide="palette" class="w-5 h-5 text-secondary-600"></i>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold">Brand & Logo</h2>
+                  <p class="text-sm text-gray-500">Customize your brand appearance</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium mb-2">Logo</label>
+                  <div class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl p-6 text-center hover:border-primary-500 transition-colors cursor-pointer">
+                    <div class="w-20 h-20 mx-auto rounded-2xl gradient-bg flex items-center justify-center mb-3">
+                      <i data-lucide="image" class="w-10 h-10 text-white"></i>
+                    </div>
+                    <p class="text-sm font-semibold">Upload Logo</p>
+                    <p class="text-xs text-gray-500 mt-1">PNG, JPG up to 2MB</p>
+                  </div>
+                </div>
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Primary Color</label>
+                    <div class="flex items-center gap-3">
+                      <input type="color" value="#2563EB" class="w-12 h-12 rounded-xl cursor-pointer border-2 border-gray-200 dark:border-gray-700" />
+                      <input type="text" value="#2563EB" class="input-field flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Secondary Color</label>
+                    <div class="flex items-center gap-3">
+                      <input type="color" value="#7C3AED" class="w-12 h-12 rounded-xl cursor-pointer border-2 border-gray-200 dark:border-gray-700" />
+                      <input type="text" value="#7C3AED" class="input-field flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Welcome Message</label>
+                    <textarea rows="3" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none">Welcome to MediCare Hospital! How can I help you today?</textarea>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ============== DATABASE CONNECTION (NEW) ============== -->
+            <section id="database" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
+                    <i data-lucide="database" class="w-5 h-5 text-cyan-600"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold">Database Connection</h2>
+                    <p class="text-sm text-gray-500">Connect your database so AI can read & write data</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="flex items-center gap-1.5 text-xs font-semibold text-success-500">
+                    <span class="w-2 h-2 bg-success-500 rounded-full pulse-dot"></span>
+                    Connected
+                  </span>
+                  <div class="toggle active" data-toggle id="dbToggle"></div>
+                </div>
+              </div>
+
+              <!-- Database Type Selection -->
+              <div class="mb-6">
+                <label class="block text-sm font-medium mb-3">Choose Database Type</label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div class="db-card selected glass rounded-xl p-4 border-2 border-primary-500 text-center" data-db="mysql">
+                    <i data-lucide="database" class="w-8 h-8 mx-auto mb-2 text-blue-600"></i>
+                    <div class="text-xs font-semibold">MySQL</div>
+                  </div>
+                  <div class="db-card glass rounded-xl p-4 border-2 border-gray-200 dark:border-gray-800 text-center" data-db="postgresql">
+                    <i data-lucide="database" class="w-8 h-8 mx-auto mb-2 text-indigo-600"></i>
+                    <div class="text-xs font-semibold">PostgreSQL</div>
+                  </div>
+                  <div class="db-card glass rounded-xl p-4 border-2 border-gray-200 dark:border-gray-800 text-center" data-db="mongodb">
+                    <i data-lucide="leaf" class="w-8 h-8 mx-auto mb-2 text-green-600"></i>
+                    <div class="text-xs font-semibold">MongoDB</div>
+                  </div>
+                  <div class="db-card glass rounded-xl p-4 border-2 border-gray-200 dark:border-gray-800 text-center" data-db="sqlite">
+                    <i data-lucide="hard-drive" class="w-8 h-8 mx-auto mb-2 text-gray-600"></i>
+                    <div class="text-xs font-semibold">SQLite</div>
+                  </div>
+                  <div class="db-card glass rounded-xl p-4 border-2 border-gray-200 dark:border-gray-800 text-center" data-db="supabase">
+                    <i data-lucide="cloud" class="w-8 h-8 mx-auto mb-2 text-emerald-600"></i>
+                    <div class="text-xs font-semibold">Supabase</div>
+                  </div>
+                  <div class="db-card glass rounded-xl p-4 border-2 border-gray-200 dark:border-gray-800 text-center" data-db="firebase">
+                    <i data-lucide="flame" class="w-8 h-8 mx-auto mb-2 text-orange-600"></i>
+                    <div class="text-xs font-semibold">Firebase</div>
+                  </div>
+                  <div class="db-card glass rounded-xl p-4 border-2 border-gray-200 dark:border-gray-800 text-center" data-db="airtable">
+                    <i data-lucide="table-2" class="w-8 h-8 mx-auto mb-2 text-red-600"></i>
+                    <div class="text-xs font-semibold">Airtable</div>
+                  </div>
+                  <div class="db-card glass rounded-xl p-4 border-2 border-gray-200 dark:border-gray-800 text-center" data-db="googlesheets">
+                    <i data-lucide="sheet" class="w-8 h-8 mx-auto mb-2 text-green-600"></i>
+                    <div class="text-xs font-semibold">Google Sheets</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Connection Form -->
+              <div class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Host</label>
+                    <input type="text" value="db.medicare-hospital.com" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Port</label>
+                    <input type="text" value="3306" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Database Name</label>
+                    <input type="text" value="medicare_prod" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Username</label>
+                    <input type="text" value="omniassist_ai" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Password</label>
+                  <div class="relative">
+                    <input type="password" id="dbPassword" value="••••••••••••••••" class="input-field w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                    <button type="button" id="toggleDbPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                      <i data-lucide="eye" class="w-5 h-5"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- AI Permissions -->
+                <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-primary-600"></i>
+                    AI Database Permissions
+                  </h3>
+                  <p class="text-xs text-gray-500 mb-4">Control what your AI Employee can do with your database</p>
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                          <i data-lucide="search" class="w-4 h-4 text-primary-600"></i>
+                        </div>
+                        <div>
+                          <div class="font-semibold text-sm">Read Data</div>
+                          <div class="text-xs text-gray-500">Query invoices, customers, orders</div>
+                        </div>
+                      </div>
+                      <div class="toggle active" data-toggle></div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-success-100 dark:bg-success-900/30 flex items-center justify-center">
+                          <i data-lucide="file-plus" class="w-4 h-4 text-success-600"></i>
+                        </div>
+                        <div>
+                          <div class="font-semibold text-sm">Create Records</div>
+                          <div class="text-xs text-gray-500">Add new invoices, customers, orders</div>
+                        </div>
+                      </div>
+                      <div class="toggle active" data-toggle></div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-warning-100 dark:bg-warning-900/30 flex items-center justify-center">
+                          <i data-lucide="edit" class="w-4 h-4 text-warning-600"></i>
+                        </div>
+                        <div>
+                          <div class="font-semibold text-sm">Update Records</div>
+                          <div class="text-xs text-gray-500">Modify existing data</div>
+                        </div>
+                      </div>
+                      <div class="toggle active" data-toggle></div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                          <i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i>
+                        </div>
+                        <div>
+                          <div class="font-semibold text-sm">Delete Records</div>
+                          <div class="text-xs text-gray-500">Remove data (requires approval)</div>
+                        </div>
+                      </div>
+                      <div class="toggle" data-toggle></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Connected Tables -->
+                <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold flex items-center gap-2">
+                      <i data-lucide="table" class="w-4 h-4 text-primary-600"></i>
+                      Connected Tables
+                    </h3>
+                    <button class="text-xs text-primary-600 hover:text-primary-700 font-semibold flex items-center gap-1">
+                      <i data-lucide="plus" class="w-3 h-3"></i> Add Table
+                    </button>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      <div class="flex items-center gap-2">
+                        <i data-lucide="table" class="w-4 h-4 text-blue-600"></i>
+                        <span class="text-sm font-medium">invoices</span>
+                      </div>
+                      <span class="text-xs text-gray-500">1,284 rows</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      <div class="flex items-center gap-2">
+                        <i data-lucide="table" class="w-4 h-4 text-green-600"></i>
+                        <span class="text-sm font-medium">customers</span>
+                      </div>
+                      <span class="text-xs text-gray-500">3,492 rows</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      <div class="flex items-center gap-2">
+                        <i data-lucide="table" class="w-4 h-4 text-purple-600"></i>
+                        <span class="text-sm font-medium">orders</span>
+                      </div>
+                      <span class="text-xs text-gray-500">2,847 rows</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                      <div class="flex items-center gap-2">
+                        <i data-lucide="table" class="w-4 h-4 text-orange-600"></i>
+                        <span class="text-sm font-medium">appointments</span>
+                      </div>
+                      <span class="text-xs text-gray-500">847 rows</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                  <button class="flex-1 gradient-bg text-white font-semibold px-6 py-3 rounded-xl shadow-lg flex items-center justify-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4"></i>
+                    Test Connection
+                  </button>
+                  <button class="flex-1 border-2 border-primary-500 text-primary-600 font-semibold px-6 py-3 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    Save Configuration
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- WhatsApp Settings -->
+            <section id="whatsapp" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-success-100 dark:bg-success-900/30 flex items-center justify-center">
+                    <i data-lucide="message-circle" class="w-5 h-5 text-success-600"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold">WhatsApp Settings</h2>
+                    <p class="text-sm text-gray-500">Connect your WhatsApp Business</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm text-gray-500">Connected</span>
+                  <div class="toggle active" data-toggle></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium mb-2">WhatsApp Business Number</label>
+                  <input type="tel" value="+1 (555) 987-6543" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Business Account ID</label>
+                  <input type="text" value="BA-2847-MEDICARE" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                </div>
+              </div>
+              <div class="mt-4 space-y-3">
+                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  <div>
+                    <div class="font-semibold text-sm">Auto-reply to new chats</div>
+                    <div class="text-xs text-gray-500">Send welcome message automatically</div>
+                  </div>
+                  <div class="toggle active" data-toggle></div>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  <div>
+                    <div class="font-semibold text-sm">Business hours only</div>
+                    <div class="text-xs text-gray-500">Only respond during business hours</div>
+                  </div>
+                  <div class="toggle" data-toggle></div>
+                </div>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  <div>
+                    <div class="font-semibold text-sm">Read receipts</div>
+                    <div class="text-xs text-gray-500">Show read receipts to customers</div>
+                  </div>
+                  <div class="toggle active" data-toggle></div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Voice Settings -->
+            <section id="voice" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-warning-100 dark:bg-warning-900/30 flex items-center justify-center">
+                  <i data-lucide="phone" class="w-5 h-5 text-warning-600"></i>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold">Voice Settings</h2>
+                  <p class="text-sm text-gray-500">Configure your AI voice agent</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium mb-2">Voice Provider</label>
+                  <select class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none">
+                    <option>ElevenLabs</option>
+                    <option>OpenAI TTS</option>
+                    <option>Google Cloud TTS</option>
+                    <option>Azure TTS</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Voice</label>
+                  <select class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none">
+                    <option>Sarah (Female, Professional)</option>
+                    <option>James (Male, Friendly)</option>
+                    <option>Emma (Female, Warm)</option>
+                    <option>David (Male, Authoritative)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Language</label>
+                  <select class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none">
+                    <option>English (US)</option>
+                    <option>English (UK)</option>
+                    <option>Spanish</option>
+                    <option>French</option>
+                    <option>Hindi</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Phone Number</label>
+                  <input type="tel" value="+1 (555) 100-2000" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                </div>
+              </div>
+              <div class="mt-4">
+                <label class="block text-sm font-medium mb-2">Speaking Speed: <span class="text-primary-600">1.0x</span></label>
+                <input type="range" min="0.5" max="2" step="0.1" value="1" class="w-full accent-primary-600" />
+              </div>
+            </section>
+
+            <!-- AI Configuration -->
+            <section id="ai" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center">
+                  <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                  <h2 class="text-xl font-bold">AI Configuration</h2>
+                  <p class="text-sm text-gray-500">Customize your AI Employee behavior</p>
+                </div>
+              </div>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium mb-2">AI Model</label>
+                  <select class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none">
+                    <option>GPT-4o (Recommended)</option>
+                    <option>GPT-4 Turbo</option>
+                    <option>Claude 3.5 Sonnet</option>
+                    <option>Gemini 2.0 Pro</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">AI Personality</label>
+                  <select class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none">
+                    <option>Professional & Helpful</option>
+                    <option>Friendly & Casual</option>
+                    <option>Formal & Concise</option>
+                    <option>Empathetic & Caring</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium mb-2">Custom System Prompt</label>
+                  <textarea rows="4" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none font-mono text-sm">You are a helpful AI assistant for MediCare Hospital. You have access to the business database and can query invoices, customers, orders, and appointments. Always be professional, empathetic, and accurate. If you don't know an answer, offer to connect the customer with a human agent.</textarea>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Temperature</label>
+                    <input type="number" min="0" max="1" step="0.1" value="0.7" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-2">Max Tokens</label>
+                    <input type="number" value="2048" class="input-field w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Users & Roles -->
+            <section id="users" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center">
+                    <i data-lucide="users" class="w-5 h-5 text-pink-600"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold">Users & Roles</h2>
+                    <p class="text-sm text-gray-500">Manage team members and permissions</p>
+                  </div>
+                </div>
+                <button class="gradient-bg text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg flex items-center gap-1">
+                  <i data-lucide="user-plus" class="w-4 h-4"></i> Invite User
+                </button>
+              </div>
+              <div class="space-y-3">
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center text-white font-bold">JD</div>
+                  <div class="flex-1">
+                    <div class="font-semibold text-sm">John Doe <span class="text-xs text-primary-600">(You)</span></div>
+                    <div class="text-xs text-gray-500">john@medicare.com</div>
+                  </div>
+                  <span class="px-3 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs font-semibold">Owner</span>
+                  <button class="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"><i data-lucide="more-vertical" class="w-4 h-4"></i></button>
+                </div>
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  <div class="w-10 h-10 rounded-full bg-secondary-100 dark:bg-secondary-900/30 flex items-center justify-center text-secondary-600 font-bold">SK</div>
+                  <div class="flex-1">
+                    <div class="font-semibold text-sm">Sarah Kim</div>
+                    <div class="text-xs text-gray-500">sarah@medicare.com</div>
+                  </div>
+                  <span class="px-3 py-1 rounded-full bg-secondary-100 dark:bg-secondary-900/30 text-secondary-700 dark:text-secondary-300 text-xs font-semibold">Admin</span>
+                  <button class="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"><i data-lucide="more-vertical" class="w-4 h-4"></i></button>
+                </div>
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  <div class="w-10 h-10 rounded-full bg-success-100 dark:bg-success-900/30 flex items-center justify-center text-success-600 font-bold">MC</div>
+                  <div class="flex-1">
+                    <div class="font-semibold text-sm">Mike Chen</div>
+                    <div class="text-xs text-gray-500">mike@medicare.com</div>
+                  </div>
+                  <span class="px-3 py-1 rounded-full bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 text-xs font-semibold">Agent</span>
+                  <button class="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"><i data-lucide="more-vertical" class="w-4 h-4"></i></button>
+                </div>
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+                  <div class="w-10 h-10 rounded-full bg-warning-100 dark:bg-warning-900/30 flex items-center justify-center text-warning-600 font-bold">EW</div>
+                  <div class="flex-1">
+                    <div class="font-semibold text-sm">Emma Wilson</div>
+                    <div class="text-xs text-gray-500">emma@medicare.com</div>
+                  </div>
+                  <span class="px-3 py-1 rounded-full bg-warning-100 dark:bg-warning-900/30 text-warning-700 dark:text-warning-300 text-xs font-semibold">Viewer</span>
+                  <button class="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"><i data-lucide="more-vertical" class="w-4 h-4"></i></button>
+                </div>
+              </div>
+            </section>
+
+            <!-- API Keys -->
+            <section id="api" class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+              <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                    <i data-lucide="key" class="w-5 h-5 text-indigo-600"></i>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold">API Keys</h2>
+                    <p class="text-sm text-gray-500">Manage API access for integrations</p>
+                  </div>
+                </div>
+                <button class="gradient-bg text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-lg flex items-center gap-1">
+                  <i data-lucide="plus" class="w-4 h-4"></i> Generate Key
+                </button>
+              </div>
+              <div class="space-y-3">
+                <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                  <div class="flex items-center justify-between mb-2">
+                    <div>
+                      <div class="font-semibold text-sm">Production Key</div>
+                      <div class="text-xs text-gray-500">Created on Jan 1, 2025</div>
+                    </div>
+                    <span class="px-2 py-1 rounded-full bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 text-xs font-semibold">Active</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <code class="flex-1 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-900 text-xs font-mono">sk-prod-••••••••••••••••••••••••a8f2</code>
+                    <button class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" title="Copy"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                    <button class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" title="Regenerate"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                  </div>
+                </div>
+                <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                  <div class="flex items-center justify-between mb-2">
+                    <div>
+                      <div class="font-semibold text-sm">Development Key</div>
+                      <div class="text-xs text-gray-500">Created on Dec 15, 2024</div>
+                    </div>
+                    <span class="px-2 py-1 rounded-full bg-success-100 dark:bg-success-900/30 text-success-700 dark:text-success-300 text-xs font-semibold">Active</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <code class="flex-1 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-900 text-xs font-mono">sk-dev-••••••••••••••••••••••••3b9c</code>
+                    <button class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" title="Copy"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                    <button class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700" title="Regenerate"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-4 p-4 rounded-xl bg-warning-50 dark:bg-warning-900/20 border border-warning-200 dark:border-warning-800">
+                <div class="flex items-start gap-3">
+                  <i data-lucide="alert-triangle" class="w-5 h-5 text-warning-600 flex-shrink-0 mt-0.5"></i>
+                  <div>
+                    <p class="text-sm font-semibold text-warning-800 dark:text-warning-300">Keep your API keys secure</p>
+                    <p class="text-xs text-warning-700 dark:text-warning-400 mt-1">Never share your API keys publicly. Regenerate immediately if compromised.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+  const html = document.documentElement;
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  if (savedTheme === 'dark') html.classList.add('dark');
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    lucide.createIcons();
+  });
+
+  // Sidebar toggle
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('-translate-x-full');
+    sidebarOverlay.classList.toggle('hidden');
+  });
+  sidebarOverlay.addEventListener('click', () => {
+    sidebar.classList.add('-translate-x-full');
+    sidebarOverlay.classList.add('hidden');
+  });
+
+  // Toggle switches
+  document.querySelectorAll('[data-toggle]').forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      toggle.classList.toggle('active');
+    });
+  });
+
+  // Settings nav active state
+  const navItems = document.querySelectorAll('.settings-nav-item');
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      navItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  // Database type selection
+  document.querySelectorAll('.db-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.db-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    });
+  });
+
+  // Toggle DB password visibility
+  document.getElementById('toggleDbPassword').addEventListener('click', () => {
+    const input = document.getElementById('dbPassword');
+    input.type = input.type === 'password' ? 'text' : 'password';
+    lucide.createIcons();
+  });
+</script>
+</body>
+</html>

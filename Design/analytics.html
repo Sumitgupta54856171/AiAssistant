@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Analytics — OmniAssist AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.3); }
+  .dark .glass { background: rgba(17,24,39,0.7); border: 1px solid rgba(255,255,255,0.1); }
+  .gradient-text { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .gradient-bg { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); }
+  .sidebar-link { transition: all 0.2s; }
+  .sidebar-link:hover, .sidebar-link.active { background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(124,58,237,0.1)); color: #2563eb; }
+  .dark .sidebar-link:hover, .dark .sidebar-link.active { background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(124,58,237,0.2)); color: #60a5fa; }
+  .chart-bar { transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+  .line-chart { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: drawLine 2s ease-out forwards; }
+  @keyframes drawLine { to { stroke-dashoffset: 0; } }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  .dark ::-webkit-scrollbar-thumb { background: #475569; }
+</style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+
+<div class="flex h-screen overflow-hidden">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+    <div class="h-16 px-6 flex items-center border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-lg">
+          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-lg font-bold gradient-text">OmniAssist</span>
+      </a>
+    </div>
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <a href="dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard</a>
+      <a href="ai-chat.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="message-circle" class="w-5 h-5"></i> AI Chat</a>
+      <a href="voice-ai.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="phone-call" class="w-5 h-5"></i> Voice AI</a>
+      <a href="document-generator.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="file-text" class="w-5 h-5"></i> Documents</a>
+      <a href="knowledge-base.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="database" class="w-5 h-5"></i> Knowledge Base</a>
+      <a href="analytics.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> Analytics</a>
+      <a href="settings.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300"><i data-lucide="settings" class="w-5 h-5"></i> Settings</a>
+    </nav>
+  </aside>
+  <div id="sidebarOverlay" class="hidden lg:hidden fixed inset-0 bg-black/50 z-30"></div>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="h-16 px-4 sm:px-6 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <button id="sidebarToggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i data-lucide="menu" class="w-5 h-5"></i></button>
+        <h1 class="text-lg sm:text-xl font-bold">Analytics</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <select class="text-sm px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 border-0 focus:outline-none">
+          <option>Last 30 days</option>
+          <option>Last 7 days</option>
+          <option>Last 90 days</option>
+          <option>This year</option>
+        </select>
+        <button class="gradient-bg text-white text-sm font-semibold px-4 py-1.5 rounded-lg flex items-center gap-1">
+          <i data-lucide="download" class="w-4 h-4"></i> Export
+        </button>
+        <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+          <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+          <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+        </button>
+        <a href="profile.html" class="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-white text-sm font-bold">JD</a>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+      <div class="max-w-7xl mx-auto">
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+          <div class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                <i data-lucide="dollar-sign" class="w-5 h-5 text-primary-600"></i>
+              </div>
+              <span class="text-xs font-semibold text-success-500 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +18.2%</span>
+            </div>
+            <div class="text-2xl font-bold">$48,592</div>
+            <div class="text-sm text-gray-500">Total Revenue</div>
+          </div>
+          <div class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 rounded-xl bg-secondary-100 dark:bg-secondary-900/30 flex items-center justify-center">
+                <i data-lucide="shopping-bag" class="w-5 h-5 text-secondary-600"></i>
+              </div>
+              <span class="text-xs font-semibold text-success-500 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +12.5%</span>
+            </div>
+            <div class="text-2xl font-bold">1,284</div>
+            <div class="text-sm text-gray-500">Total Orders</div>
+          </div>
+          <div class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 rounded-xl bg-success-100 dark:bg-success-900/30 flex items-center justify-center">
+                <i data-lucide="users" class="w-5 h-5 text-success-600"></i>
+              </div>
+              <span class="text-xs font-semibold text-success-500 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +24.1%</span>
+            </div>
+            <div class="text-2xl font-bold">3,492</div>
+            <div class="text-sm text-gray-500">New Customers</div>
+          </div>
+          <div class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 rounded-xl bg-warning-100 dark:bg-warning-900/30 flex items-center justify-center">
+                <i data-lucide="calendar-check" class="w-5 h-5 text-warning-600"></i>
+              </div>
+              <span class="text-xs font-semibold text-success-500 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +8.7%</span>
+            </div>
+            <div class="text-2xl font-bold">847</div>
+            <div class="text-sm text-gray-500">Appointments</div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <!-- Revenue Chart -->
+          <div class="lg:col-span-2 glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h3 class="text-lg font-bold">Revenue Growth</h3>
+                <p class="text-sm text-gray-500">Monthly revenue trend</p>
+              </div>
+            </div>
+            <div class="h-64 relative">
+              <svg viewBox="0 0 600 200" class="w-full h-full" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#2563eb;stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:#2563eb;stop-opacity:0" />
+                  </linearGradient>
+                </defs>
+                <path d="M 0 150 L 50 130 L 100 140 L 150 100 L 200 110 L 250 80 L 300 90 L 350 60 L 400 70 L 450 40 L 500 50 L 550 20 L 600 30 L 600 200 L 0 200 Z" fill="url(#grad1)" />
+                <path d="M 0 150 L 50 130 L 100 140 L 150 100 L 200 110 L 250 80 L 300 90 L 350 60 L 400 70 L 450 40 L 500 50 L 550 20 L 600 30" fill="none" stroke="url(#grad2)" stroke-width="3" class="line-chart" />
+                <defs>
+                  <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#2563eb" />
+                    <stop offset="100%" style="stop-color:#7c3aed" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-500 px-2">
+                <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Channel Distribution -->
+          <div class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+            <h3 class="text-lg font-bold mb-2">Channel Distribution</h3>
+            <p class="text-sm text-gray-500 mb-6">Where customers interact</p>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="font-medium">WhatsApp</span>
+                  <span class="text-gray-500">45%</span>
+                </div>
+                <div class="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div class="h-full gradient-bg rounded-full" style="width: 45%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="font-medium">Voice Calls</span>
+                  <span class="text-gray-500">30%</span>
+                </div>
+                <div class="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div class="h-full gradient-bg rounded-full" style="width: 30%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="font-medium">Web Chat</span>
+                  <span class="text-gray-500">15%</span>
+                </div>
+                <div class="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div class="h-full gradient-bg rounded-full" style="width: 15%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="font-medium">Email</span>
+                  <span class="text-gray-500">10%</span>
+                </div>
+                <div class="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div class="h-full gradient-bg rounded-full" style="width: 10%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-bold">Activity Timeline</h3>
+            <button class="text-sm text-primary-600 hover:text-primary-700 font-medium">View all</button>
+          </div>
+          <div class="relative pl-8">
+            <div class="absolute left-3 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-800"></div>
+            <div class="space-y-6">
+              <div class="relative">
+                <div class="absolute -left-8 w-6 h-6 rounded-full gradient-bg flex items-center justify-center">
+                  <i data-lucide="message-circle" class="w-3 h-3 text-white"></i>
+                </div>
+                <div class="text-xs text-gray-500">2 minutes ago</div>
+                <div class="font-semibold text-sm">New chat conversation started</div>
+                <div class="text-xs text-gray-500">Sarah Johnson initiated a chat about appointment booking</div>
+              </div>
+              <div class="relative">
+                <div class="absolute -left-8 w-6 h-6 rounded-full bg-success-500 flex items-center justify-center">
+                  <i data-lucide="check" class="w-3 h-3 text-white"></i>
+                </div>
+                <div class="text-xs text-gray-500">15 minutes ago</div>
+                <div class="font-semibold text-sm">Invoice generated successfully</div>
+                <div class="text-xs text-gray-500">Invoice #INV-2847 for $341.00 sent to Sarah Johnson</div>
+              </div>
+              <div class="relative">
+                <div class="absolute -left-8 w-6 h-6 rounded-full bg-secondary-500 flex items-center justify-center">
+                  <i data-lucide="phone" class="w-3 h-3 text-white"></i>
+                </div>
+                <div class="text-xs text-gray-500">1 hour ago</div>
+                <div class="font-semibold text-sm">Voice call completed</div>
+                <div class="text-xs text-gray-500">Mike Chen - 5m 23s - Appointment scheduled</div>
+              </div>
+              <div class="relative">
+                <div class="absolute -left-8 w-6 h-6 rounded-full bg-warning-500 flex items-center justify-center">
+                  <i data-lucide="upload" class="w-3 h-3 text-white"></i>
+                </div>
+                <div class="text-xs text-gray-500">3 hours ago</div>
+                <div class="font-semibold text-sm">New document uploaded</div>
+                <div class="text-xs text-gray-500">FAQ.pdf added to knowledge base</div>
+              </div>
+              <div class="relative">
+                <div class="absolute -left-8 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center">
+                  <i data-lucide="user-plus" class="w-3 h-3 text-white"></i>
+                </div>
+                <div class="text-xs text-gray-500">5 hours ago</div>
+                <div class="font-semibold text-sm">New customer registered</div>
+                <div class="text-xs text-gray-500">Emma Wilson signed up via WhatsApp</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+  const html = document.documentElement;
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  if (savedTheme === 'dark') html.classList.add('dark');
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    lucide.createIcons();
+  });
+
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('-translate-x-full');
+    sidebarOverlay.classList.toggle('hidden');
+  });
+  sidebarOverlay.addEventListener('click', () => {
+    sidebar.classList.add('-translate-x-full');
+    sidebarOverlay.classList.add('hidden');
+  });
+</script>
+</body>
+</html>

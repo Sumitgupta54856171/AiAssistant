@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Verify OTP — OmniAssist AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.3); }
+  .dark .glass { background: rgba(17,24,39,0.7); border: 1px solid rgba(255,255,255,0.1); }
+  .gradient-text { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .gradient-bg { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); }
+  .btn-primary { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); transition: all 0.3s; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -5px rgba(37,99,235,0.5); }
+  .auth-gradient { background: radial-gradient(ellipse at center, rgba(124,58,237,0.15), transparent 50%), radial-gradient(ellipse at bottom, rgba(37,99,235,0.15), transparent 50%); }
+  .dark .auth-gradient { background: radial-gradient(ellipse at center, rgba(124,58,237,0.25), transparent 50%), radial-gradient(ellipse at bottom, rgba(37,99,235,0.25), transparent 50%); }
+  .otp-input { width: 56px; height: 64px; text-align: center; font-size: 24px; font-weight: 700; border-radius: 12px; border: 2px solid #e5e7eb; background: white; transition: all 0.2s; }
+  .dark .otp-input { background: #1f2937; border-color: #374151; color: white; }
+  .otp-input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,0.15); transform: translateY(-2px); }
+  .particle { position: absolute; border-radius: 50%; pointer-events: none; opacity: 0.4; }
+</style>
+</head>
+<body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen auth-gradient">
+
+<div class="min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="particle w-3 h-3 bg-primary-500 animate-float" style="top:20%;left:20%"></div>
+    <div class="particle w-4 h-4 bg-secondary-500 animate-float-slow" style="top:60%;left:70%"></div>
+    <div class="particle w-2 h-2 bg-primary-400 animate-float" style="top:40%;left:50%"></div>
+  </div>
+
+  <div class="w-full max-w-md relative">
+    <a href="index.html" class="flex items-center gap-2 mb-8 justify-center">
+      <div class="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center shadow-lg">
+        <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+      </div>
+      <span class="text-xl font-bold gradient-text">OmniAssist AI</span>
+    </a>
+
+    <div class="flex justify-end mb-4">
+      <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+        <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+      </button>
+    </div>
+
+    <div class="glass rounded-3xl p-8 shadow-2xl">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 mx-auto rounded-2xl gradient-bg flex items-center justify-center shadow-lg mb-4">
+          <i data-lucide="shield-check" class="w-8 h-8 text-white"></i>
+        </div>
+        <h2 class="text-3xl font-bold mb-2">Verify your email</h2>
+        <p class="text-gray-600 dark:text-gray-400">We've sent a 6-digit code to<br /><span class="font-semibold text-gray-900 dark:text-gray-100">you@business.com</span></p>
+      </div>
+
+      <form id="otpForm" class="space-y-6">
+        <div class="flex justify-center gap-2 sm:gap-3">
+          <input type="text" maxlength="1" class="otp-input" autofocus />
+          <input type="text" maxlength="1" class="otp-input" />
+          <input type="text" maxlength="1" class="otp-input" />
+          <input type="text" maxlength="1" class="otp-input" />
+          <input type="text" maxlength="1" class="otp-input" />
+          <input type="text" maxlength="1" class="otp-input" />
+        </div>
+
+        <button type="submit" class="btn-primary w-full py-3 rounded-xl text-white font-semibold shadow-lg flex items-center justify-center gap-2">
+          Verify & Continue
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
+        </button>
+      </form>
+
+      <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Didn't receive the code?</p>
+        <button id="resendBtn" class="text-sm text-primary-600 hover:text-primary-700 font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+          Resend code in <span id="timer">30</span>s
+        </button>
+      </div>
+
+      <div class="mt-6 text-center">
+        <a href="login.html" class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          Back to sign in
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+  const html = document.documentElement;
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  if (savedTheme === 'dark') html.classList.add('dark');
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    lucide.createIcons();
+  });
+
+  // OTP auto-focus
+  const inputs = document.querySelectorAll('.otp-input');
+  inputs.forEach((input, idx) => {
+    input.addEventListener('input', (e) => {
+      if (e.target.value && idx < inputs.length - 1) inputs[idx + 1].focus();
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !e.target.value && idx > 0) inputs[idx - 1].focus();
+    });
+    input.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const data = e.clipboardData.getData('text').slice(0, 6);
+      data.split('').forEach((char, i) => { if (inputs[i]) inputs[i].value = char; });
+      if (data.length) inputs[Math.min(data.length, inputs.length) - 1].focus();
+    });
+  });
+
+  // Resend timer
+  let seconds = 30;
+  const timerEl = document.getElementById('timer');
+  const resendBtn = document.getElementById('resendBtn');
+  const interval = setInterval(() => {
+    seconds--;
+    timerEl.textContent = seconds;
+    if (seconds <= 0) {
+      clearInterval(interval);
+      resendBtn.disabled = false;
+      resendBtn.innerHTML = 'Resend code';
+    }
+  }, 1000);
+
+  resendBtn.addEventListener('click', () => {
+    if (resendBtn.disabled) return;
+    seconds = 30;
+    timerEl.textContent = 30;
+    resendBtn.disabled = true;
+    resendBtn.innerHTML = 'Resend code in <span id="timer">30</span>s';
+  });
+
+  document.getElementById('otpForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    window.location.href = 'dashboard.html';
+  });
+</script>
+</body>
+</html>
