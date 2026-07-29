@@ -67,7 +67,7 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton render={<a href="#" />}>
+            <SidebarMenuButton render={<a href="#/profile" />}>
               <User />
               <span>Profile</span>
             </SidebarMenuButton>
