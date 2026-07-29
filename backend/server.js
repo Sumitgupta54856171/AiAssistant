@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const { connectToDatabase } = require('./config/sequelize');
 const port = 4001;
 
 app.get('/', (req, res) => {
@@ -8,4 +9,5 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
+  connectToDatabase();
 });

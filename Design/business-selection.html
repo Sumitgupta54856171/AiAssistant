@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Choose Your Business — OmniAssist AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.3); }
+  .dark .glass { background: rgba(17,24,39,0.7); border: 1px solid rgba(255,255,255,0.1); }
+  .gradient-text { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .gradient-bg { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); }
+  .btn-primary { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); transition: all 0.3s; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -5px rgba(37,99,235,0.5); }
+  .business-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+  .business-card:hover { transform: translateY(-4px); }
+  .business-card.selected { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
+  .business-card.selected .check-icon { opacity: 1; transform: scale(1); }
+  .check-icon { opacity: 0; transform: scale(0.5); transition: all 0.3s; }
+  .particle { position: absolute; border-radius: 50%; pointer-events: none; opacity: 0.4; }
+</style>
+</head>
+<body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen">
+
+<div class="min-h-screen flex flex-col">
+  <!-- Top Bar -->
+  <header class="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-lg">
+          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-lg font-bold gradient-text">OmniAssist AI</span>
+      </a>
+      <div class="flex items-center gap-3">
+        <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+          <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+        </button>
+        <div class="hidden sm:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-success-500"></i>
+          Step 2 of 3
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="w-full bg-gray-100 dark:bg-gray-800 h-1">
+    <div class="gradient-bg h-1 transition-all duration-500" style="width: 66%"></div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="flex-1 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs font-semibold mb-4">
+          <i data-lucide="building-2" class="w-3 h-3"></i> BUSINESS SETUP
+        </div>
+        <h1 class="text-4xl lg:text-5xl font-bold mb-4">What type of <span class="gradient-text">business</span> do you run?</h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Choose your business type so we can customize your AI Employee with the right templates, workflows, and integrations.</p>
+      </div>
+
+      <!-- Business Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+        <div class="business-card glass rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 relative" data-business="hospital">
+          <div class="check-icon absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center">
+            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-3">
+            <i data-lucide="heart-pulse" class="w-6 h-6 text-red-600"></i>
+          </div>
+          <h3 class="font-bold mb-1">Hospital</h3>
+          <p class="text-xs text-gray-500">Patient inquiries, appointments</p>
+        </div>
+
+        <div class="business-card glass rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 relative" data-business="school">
+          <div class="check-icon absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center">
+            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-3">
+            <i data-lucide="graduation-cap" class="w-6 h-6 text-blue-600"></i>
+          </div>
+          <h3 class="font-bold mb-1">School</h3>
+          <p class="text-xs text-gray-500">Admissions, parent queries</p>
+        </div>
+
+        <div class="business-card glass rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 relative" data-business="store">
+          <div class="check-icon absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center">
+            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-3">
+            <i data-lucide="shopping-cart" class="w-6 h-6 text-green-600"></i>
+          </div>
+          <h3 class="font-bold mb-1">Grocery Store</h3>
+          <p class="text-xs text-gray-500">Orders, deliveries</p>
+        </div>
+
+        <div class="business-card glass rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 relative" data-business="hotel">
+          <div class="check-icon absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center">
+            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-3">
+            <i data-lucide="bed" class="w-6 h-6 text-purple-600"></i>
+          </div>
+          <h3 class="font-bold mb-1">Hotel</h3>
+          <p class="text-xs text-gray-500">Bookings, guest services</p>
+        </div>
+
+        <div class="business-card glass rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 relative" data-business="restaurant">
+          <div class="check-icon absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center">
+            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mb-3">
+            <i data-lucide="utensils" class="w-6 h-6 text-orange-600"></i>
+          </div>
+          <h3 class="font-bold mb-1">Restaurant</h3>
+          <p class="text-xs text-gray-500">Reservations, menu</p>
+        </div>
+
+        <div class="business-card glass rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 relative" data-business="retail">
+          <div class="check-icon absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center">
+            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center mb-3">
+            <i data-lucide="shopping-bag" class="w-6 h-6 text-pink-600"></i>
+          </div>
+          <h3 class="font-bold mb-1">Retail Shop</h3>
+          <p class="text-xs text-gray-500">Sales, inventory</p>
+        </div>
+
+        <div class="business-card glass rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 relative" data-business="coaching">
+          <div class="check-icon absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center">
+            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-3">
+            <i data-lucide="book-open" class="w-6 h-6 text-indigo-600"></i>
+          </div>
+          <h3 class="font-bold mb-1">Coaching</h3>
+          <p class="text-xs text-gray-500">Courses, enrollments</p>
+        </div>
+
+        <div class="business-card glass rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 relative" data-business="clinic">
+          <div class="check-icon absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center">
+            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center mb-3">
+            <i data-lucide="stethoscope" class="w-6 h-6 text-teal-600"></i>
+          </div>
+          <h3 class="font-bold mb-1">Clinic</h3>
+          <p class="text-xs text-gray-500">Appointments, prescriptions</p>
+        </div>
+
+        <div class="business-card glass rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 relative" data-business="realestate">
+          <div class="check-icon absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center">
+            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center mb-3">
+            <i data-lucide="home" class="w-6 h-6 text-yellow-600"></i>
+          </div>
+          <h3 class="font-bold mb-1">Real Estate</h3>
+          <p class="text-xs text-gray-500">Listings, viewings</p>
+        </div>
+
+        <div class="business-card glass rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 relative" data-business="automobile">
+          <div class="check-icon absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center">
+            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center mb-3">
+            <i data-lucide="car" class="w-6 h-6 text-cyan-600"></i>
+          </div>
+          <h3 class="font-bold mb-1">Automobile</h3>
+          <p class="text-xs text-gray-500">Showroom, test drives</p>
+        </div>
+
+        <div class="business-card glass rounded-2xl p-6 border-2 border-gray-200 dark:border-gray-800 relative" data-business="custom">
+          <div class="check-icon absolute top-3 right-3 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center">
+            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
+            <i data-lucide="sparkles" class="w-6 h-6 text-gray-600"></i>
+          </div>
+          <h3 class="font-bold mb-1">Custom</h3>
+          <p class="text-xs text-gray-500">Any other business</p>
+        </div>
+      </div>
+
+      <!-- Custom Business Input -->
+      <div id="customInput" class="hidden glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800 mb-8">
+        <label class="block text-sm font-medium mb-2">Tell us about your business</label>
+        <input type="text" placeholder="e.g., Law firm, Travel agency, Gym..." class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none" />
+      </div>
+
+      <!-- Continue Button -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <a href="register.html" class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 inline-flex items-center gap-2">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          Back
+        </a>
+        <button id="continueBtn" disabled class="btn-primary px-8 py-3 rounded-xl text-white font-semibold shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+          Continue to Dashboard
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  lucide.createIcons();
+  const html = document.documentElement;
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  if (savedTheme === 'dark') html.classList.add('dark');
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    lucide.createIcons();
+  });
+
+  const cards = document.querySelectorAll('.business-card');
+  const continueBtn = document.getElementById('continueBtn');
+  const customInput = document.getElementById('customInput');
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      cards.forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      continueBtn.disabled = false;
+      if (card.dataset.business === 'custom') {
+        customInput.classList.remove('hidden');
+      } else {
+        customInput.classList.add('hidden');
+      }
+      lucide.createIcons();
+    });
+  });
+
+  continueBtn.addEventListener('click', () => {
+    window.location.href = 'dashboard.html';
+  });
+</script>
+</body>
+</html>

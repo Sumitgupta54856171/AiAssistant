@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OmniAssist AI — One AI Assistant for Every Business</title>
+<meta name="description" content="OmniAssist AI is your AI Employee that automates customer communication for hospitals, schools, stores, hotels, and any SME." />
+
+<!-- TailwindCSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+        },
+        colors: {
+          primary: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' },
+          secondary: { 50:'#f5f3ff',100:'#ede9fe',200:'#ddd6fe',300:'#c4b5fd',400:'#a78bfa',500:'#8b5cf6',600:'#7c3aed',700:'#6d28d9',800:'#5b21b6',900:'#4c1d95' },
+        },
+        animation: {
+          'float': 'float 6s ease-in-out infinite',
+          'float-slow': 'float 10s ease-in-out infinite',
+          'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          'gradient': 'gradient 8s ease infinite',
+          'fade-up': 'fadeUp 0.6s ease-out forwards',
+          'fade-in': 'fadeIn 0.5s ease-out forwards',
+          'slide-in': 'slideIn 0.4s ease-out forwards',
+          'shimmer': 'shimmer 2s linear infinite',
+        },
+        keyframes: {
+          float: { '0%,100%':{transform:'translateY(0)'}, '50%':{transform:'translateY(-20px)'} },
+          gradient: { '0%,100%':{backgroundPosition:'0% 50%'}, '50%':{backgroundPosition:'100% 50%'} },
+          fadeUp: { '0%':{opacity:'0',transform:'translateY(20px)'}, '100%':{opacity:'1',transform:'translateY(0)'} },
+          fadeIn: { '0%':{opacity:'0'}, '100%':{opacity:'1'} },
+          slideIn: { '0%':{opacity:'0',transform:'translateX(-20px)'}, '100%':{opacity:'1',transform:'translateX(0)'} },
+          shimmer: { '0%':{backgroundPosition:'-1000px 0'}, '100%':{backgroundPosition:'1000px 0'} },
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.3); }
+  .dark .glass { background: rgba(17,24,39,0.7); border: 1px solid rgba(255,255,255,0.1); }
+  .gradient-text { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .gradient-bg { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 50%, #2563EB 100%); background-size: 200% 200%; }
+  .hero-gradient { background: radial-gradient(ellipse at top, rgba(124,58,237,0.15), transparent 50%), radial-gradient(ellipse at bottom, rgba(37,99,235,0.15), transparent 50%); }
+  .dark .hero-gradient { background: radial-gradient(ellipse at top, rgba(124,58,237,0.25), transparent 50%), radial-gradient(ellipse at bottom, rgba(37,99,235,0.25), transparent 50%); }
+  .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(37,99,235,0.2); }
+  .particle { position: absolute; border-radius: 50%; pointer-events: none; opacity: 0.4; }
+  .skeleton { background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%); background-size: 1000px 100%; animation: shimmer 2s linear infinite; }
+  .dark .skeleton { background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%); background-size: 1000px 100%; }
+  .btn-primary { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); transition: all 0.3s; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -5px rgba(37,99,235,0.5); }
+  .nav-link { position: relative; }
+  .nav-link::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:2px; background: linear-gradient(90deg, #2563EB, #7C3AED); transition: width 0.3s; }
+  .nav-link:hover::after { width:100%; }
+  .feature-icon { background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(124,58,237,0.1)); }
+  .dark .feature-icon { background: linear-gradient(135deg, rgba(37,99,235,0.2), rgba(124,58,237,0.2)); }
+  details[open] summary .lucide-chevron-down { transform: rotate(180deg); }
+  summary { list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  .pricing-popular { background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%); }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  .dark ::-webkit-scrollbar-thumb { background: #475569; }
+</style>
+</head>
+
+<body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+<!-- ============== NAVIGATION ============== -->
+<nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-gray-200/50 dark:border-gray-800/50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="index.html" class="flex items-center gap-2 group">
+        <div class="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <span class="text-lg font-bold gradient-text">OmniAssist AI</span>
+      </a>
+
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#features" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Features</a>
+        <a href="#how-it-works" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">How it Works</a>
+        <a href="#pricing" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Pricing</a>
+        <a href="#testimonials" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">Testimonials</a>
+        <a href="#faq" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">FAQ</a>
+      </div>
+
+      <!-- Right Actions -->
+      <div class="flex items-center gap-3">
+        <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle theme">
+          <i data-lucide="moon" class="w-5 h-5 dark:hidden"></i>
+          <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+        </button>
+        <a href="login.html" class="hidden sm:inline-flex text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 px-3 py-2">Sign In</a>
+        <a href="register.html" class="btn-primary text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-lg">Get Started</a>
+        <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+    <div class="px-4 py-4 space-y-2">
+      <a href="#features" class="block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">Features</a>
+      <a href="#how-it-works" class="block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">How it Works</a>
+      <a href="#pricing" class="block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">Pricing</a>
+      <a href="#testimonials" class="block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">Testimonials</a>
+      <a href="#faq" class="block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">FAQ</a>
+      <a href="login.html" class="block px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">Sign In</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============== HERO SECTION ============== -->
+<section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 hero-gradient overflow-hidden">
+  <!-- Floating Particles -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="particle w-2 h-2 bg-primary-500 animate-float" style="top:20%;left:10%;animation-delay:0s"></div>
+    <div class="particle w-3 h-3 bg-secondary-500 animate-float-slow" style="top:40%;left:80%;animation-delay:1s"></div>
+    <div class="particle w-2 h-2 bg-primary-400 animate-float" style="top:60%;left:30%;animation-delay:2s"></div>
+    <div class="particle w-4 h-4 bg-secondary-400 animate-float-slow" style="top:30%;left:60%;animation-delay:3s"></div>
+    <div class="particle w-2 h-2 bg-primary-300 animate-float" style="top:80%;left:70%;animation-delay:1.5s"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <div class="text-center max-w-4xl mx-auto">
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass border border-primary-200 dark:border-primary-800 mb-6 animate-fade-up">
+        <span class="flex h-2 w-2 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
+        </span>
+        <span class="text-xs font-semibold text-primary-700 dark:text-primary-300">Now powered by GPT-4o & Gemini 2.0</span>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6 animate-fade-up" style="animation-delay:0.1s">
+        One <span class="gradient-text">AI Assistant</span><br />
+        for Every Business
+      </h1>
+
+      <!-- Subheadline -->
+      <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-10 animate-fade-up" style="animation-delay:0.2s">
+        OmniAssist AI is your 24/7 AI Employee that handles customer chats, voice calls, documents, and analytics — built for hospitals, schools, stores, hotels, and any SME.
+      </p>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 animate-fade-up" style="animation-delay:0.3s">
+        <a href="register.html" class="btn-primary text-white font-semibold px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-2 w-full sm:w-auto justify-center">
+          Start Free Trial
+          <i data-lucide="arrow-right" class="w-5 h-5"></i>
+        </a>
+        <a href="#how-it-works" class="glass font-semibold px-8 py-4 rounded-2xl flex items-center gap-2 w-full sm:w-auto justify-center hover:shadow-xl transition-shadow">
+          <i data-lucide="play-circle" class="w-5 h-5 text-primary-600"></i>
+          Watch Demo
+        </a>
+      </div>
+
+      <!-- Trust Badges -->
+      <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500 dark:text-gray-400 animate-fade-up" style="animation-delay:0.4s">
+        <div class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-success-500"></i> No credit card</div>
+        <div class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-success-500"></i> 14-day free trial</div>
+        <div class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-success-500"></i> Cancel anytime</div>
+      </div>
+    </div>
+
+    <!-- Hero Visual -->
+    <div class="mt-16 lg:mt-20 relative animate-fade-up" style="animation-delay:0.5s">
+      <div class="glass rounded-3xl p-3 shadow-2xl max-w-5xl mx-auto">
+        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl overflow-hidden">
+          <!-- Mock Dashboard Preview -->
+          <div class="p-6">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="w-3 h-3 rounded-full bg-red-400"></div>
+              <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+              <div class="w-3 h-3 rounded-full bg-green-400"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs text-gray-500">Active Chats</span>
+                  <i data-lucide="message-square" class="w-4 h-4 text-primary-500"></i>
+                </div>
+                <div class="text-2xl font-bold">1,284</div>
+                <div class="text-xs text-success-500 flex items-center gap-1 mt-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +12.5%</div>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs text-gray-500">Calls Handled</span>
+                  <i data-lucide="phone" class="w-4 h-4 text-secondary-500"></i>
+                </div>
+                <div class="text-2xl font-bold">847</div>
+                <div class="text-xs text-success-500 flex items-center gap-1 mt-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +8.2%</div>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs text-gray-500">Documents</span>
+                  <i data-lucide="file-text" class="w-4 h-4 text-warning-500"></i>
+                </div>
+                <div class="text-2xl font-bold">2,156</div>
+                <div class="text-xs text-success-500 flex items-center gap-1 mt-1"><i data-lucide="trending-up" class="w-3 h-3"></i> +24.1%</div>
+              </div>
+            </div>
+            <div class="mt-4 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center">
+                  <i data-lucide="bot" class="w-5 h-5 text-white"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="text-sm font-semibold">AI Assistant</div>
+                  <div class="text-xs text-gray-500">"Hello! How can I help you today?"</div>
+                </div>
+                <div class="flex gap-1">
+                  <span class="w-2 h-2 bg-primary-500 rounded-full animate-bounce"></span>
+                  <span class="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay:0.1s"></span>
+                  <span class="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay:0.2s"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== LOGOS / SOCIAL PROOF ============== -->
+<section class="py-12 border-y border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <p class="text-center text-sm font-semibold text-gray-500 dark:text-gray-400 mb-8 uppercase tracking-wider">Trusted by 10,000+ businesses worldwide</p>
+    <div class="grid grid-cols-2 md:grid-cols-6 gap-8 items-center opacity-60">
+      <div class="text-2xl font-bold text-gray-400 text-center">MediCare+</div>
+      <div class="text-2xl font-bold text-gray-400 text-center">EduSmart</div>
+      <div class="text-2xl font-bold text-gray-400 text-center">FreshMart</div>
+      <div class="text-2xl font-bold text-gray-400 text-center">GrandStay</div>
+      <div class="text-2xl font-bold text-gray-400 text-center">AutoHub</div>
+      <div class="text-2xl font-bold text-gray-400 text-center">LearnPro</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FEATURES ============== -->
+<section id="features" class="py-20 lg:py-32">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs font-semibold mb-4">
+        <i data-lucide="zap" class="w-3 h-3"></i> POWERFUL FEATURES
+      </div>
+      <h2 class="text-4xl lg:text-5xl font-bold mb-4">Everything you need to <span class="gradient-text">automate</span></h2>
+      <p class="text-lg text-gray-600 dark:text-gray-400">From WhatsApp chats to voice calls, documents to analytics — OmniAssist AI handles it all so you can focus on growth.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Feature 1 -->
+      <div class="card-hover glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+        <div class="feature-icon w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+          <i data-lucide="message-circle" class="w-6 h-6 text-primary-600"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2">AI Chat Assistant</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">WhatsApp-style conversations with smart AI that understands context, sentiment, and intent.</p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="card-hover glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+        <div class="feature-icon w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+          <i data-lucide="phone-call" class="w-6 h-6 text-secondary-600"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Voice AI Calls</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Human-like voice agents that handle inbound and outbound calls 24/7 in multiple languages.</p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="card-hover glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+        <div class="feature-icon w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+          <i data-lucide="file-text" class="w-6 h-6 text-success-600"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Document Generator</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Auto-create invoices, agreements, certificates, and reports in PDF or DOCX format.</p>
+      </div>
+
+      <!-- Feature 4 -->
+      <div class="card-hover glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+        <div class="feature-icon w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+          <i data-lucide="database" class="w-6 h-6 text-warning-600"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Knowledge Base</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Upload PDFs, docs, and files. AI learns your business and answers accurately with sources.</p>
+      </div>
+
+      <!-- Feature 5 -->
+      <div class="card-hover glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+        <div class="feature-icon w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+          <i data-lucide="bar-chart-3" class="w-6 h-6 text-primary-600"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Business Analytics</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Real-time dashboards with revenue, orders, customers, and growth insights.</p>
+      </div>
+
+      <!-- Feature 6 -->
+      <div class="card-hover glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800">
+        <div class="feature-icon w-12 h-12 rounded-xl flex items-center justify-center mb-4">
+          <i data-lucide="building-2" class="w-6 h-6 text-secondary-600"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Multi-Business</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Works for hospitals, schools, stores, hotels, restaurants, and any SME out of the box.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== HOW IT WORKS ============== -->
+<section id="how-it-works" class="py-20 lg:py-32 bg-gray-50 dark:bg-gray-900/50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-50 dark:bg-secondary-900/30 text-secondary-700 dark:text-secondary-300 text-xs font-semibold mb-4">
+        <i data-lucide="workflow" class="w-3 h-3"></i> HOW IT WORKS
+      </div>
+      <h2 class="text-4xl lg:text-5xl font-bold mb-4">Up and running in <span class="gradient-text">3 simple steps</span></h2>
+      <p class="text-lg text-gray-600 dark:text-gray-400">No technical skills required. Get your AI Employee ready in under 5 minutes.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+      <!-- Connector Line -->
+      <div class="hidden md:block absolute top-12 left-1/6 right-1/6 h-0.5 bg-gradient-to-r from-primary-500 to-secondary-500"></div>
+
+      <!-- Step 1 -->
+      <div class="relative text-center">
+        <div class="w-24 h-24 mx-auto rounded-2xl gradient-bg flex items-center justify-center shadow-2xl mb-6 relative z-10">
+          <i data-lucide="user-plus" class="w-10 h-10 text-white"></i>
+        </div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-8 h-8 rounded-full bg-white dark:bg-gray-900 border-2 border-primary-500 flex items-center justify-center text-sm font-bold text-primary-600 z-20">1</div>
+        <h3 class="text-xl font-bold mb-2">Create Account</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Sign up in 30 seconds. Choose your business type and customize your AI.</p>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="relative text-center">
+        <div class="w-24 h-24 mx-auto rounded-2xl gradient-bg flex items-center justify-center shadow-2xl mb-6 relative z-10">
+          <i data-lucide="upload-cloud" class="w-10 h-10 text-white"></i>
+        </div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-8 h-8 rounded-full bg-white dark:bg-gray-900 border-2 border-primary-500 flex items-center justify-center text-sm font-bold text-primary-600 z-20">2</div>
+        <h3 class="text-xl font-bold mb-2">Train Your AI</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Upload documents, FAQs, and product info. AI learns your business instantly.</p>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="relative text-center">
+        <div class="w-24 h-24 mx-auto rounded-2xl gradient-bg flex items-center justify-center shadow-2xl mb-6 relative z-10">
+          <i data-lucide="rocket" class="w-10 h-10 text-white"></i>
+        </div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-8 h-8 rounded-full bg-white dark:bg-gray-900 border-2 border-primary-500 flex items-center justify-center text-sm font-bold text-primary-600 z-20">3</div>
+        <h3 class="text-xl font-bold mb-2">Go Live</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Connect WhatsApp, phone, and website. Your AI Employee starts working immediately.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== TESTIMONIALS ============== -->
+<section id="testimonials" class="py-20 lg:py-32">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-success-50 dark:bg-success-900/30 text-success-700 dark:text-success-300 text-xs font-semibold mb-4">
+        <i data-lucide="heart" class="w-3 h-3"></i> TESTIMONIALS
+      </div>
+      <h2 class="text-4xl lg:text-5xl font-bold mb-4">Loved by businesses <span class="gradient-text">everywhere</span></h2>
+      <p class="text-lg text-gray-600 dark:text-gray-400">See what our customers say about transforming their customer communication.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Testimonial 1 -->
+      <div class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800 card-hover">
+        <div class="flex items-center gap-1 mb-4">
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+        </div>
+        <p class="text-gray-700 dark:text-gray-300 mb-6">"OmniAssist AI reduced our patient inquiry response time from 4 hours to 30 seconds. Our staff can now focus on actual care."</p>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center text-white font-bold">DR</div>
+          <div>
+            <div class="font-semibold text-sm">Dr. Rajesh Kumar</div>
+            <div class="text-xs text-gray-500">MediCare Hospital</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimonial 2 -->
+      <div class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800 card-hover">
+        <div class="flex items-center gap-1 mb-4">
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+        </div>
+        <p class="text-gray-700 dark:text-gray-300 mb-6">"We handle 3x more student inquiries now without hiring extra staff. The AI even helps with admissions!"</p>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center text-white font-bold">SP</div>
+          <div>
+            <div class="font-semibold text-sm">Sarah Patel</div>
+            <div class="text-xs text-gray-500">EduSmart Academy</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimonial 3 -->
+      <div class="glass rounded-2xl p-6 border border-gray-200 dark:border-gray-800 card-hover">
+        <div class="flex items-center gap-1 mb-4">
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+          <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+        </div>
+        <p class="text-gray-700 dark:text-gray-300 mb-6">"Our hotel bookings increased 40% after deploying OmniAssist. The voice AI is indistinguishable from a real receptionist."</p>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center text-white font-bold">MJ</div>
+          <div>
+            <div class="font-semibold text-sm">Michael Johnson</div>
+            <div class="text-xs text-gray-500">GrandStay Hotels</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PRICING ============== -->
+<section id="pricing" class="py-20 lg:py-32 bg-gray-50 dark:bg-gray-900/50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warning-50 dark:bg-warning-900/30 text-warning-700 dark:text-warning-300 text-xs font-semibold mb-4">
+        <i data-lucide="tag" class="w-3 h-3"></i> PRICING
+      </div>
+      <h2 class="text-4xl lg:text-5xl font-bold mb-4">Simple, transparent <span class="gradient-text">pricing</span></h2>
+      <p class="text-lg text-gray-600 dark:text-gray-400">Choose the plan that fits your business. All plans include a 14-day free trial.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      <!-- Starter -->
+      <div class="glass rounded-2xl p-8 border border-gray-200 dark:border-gray-800 card-hover">
+        <h3 class="text-xl font-bold mb-2">Starter</h3>
+        <p class="text-sm text-gray-500 mb-6">Perfect for small businesses</p>
+        <div class="mb-6">
+          <span class="text-5xl font-extrabold">$29</span>
+          <span class="text-gray-500">/month</span>
+        </div>
+        <a href="register.html" class="block w-full text-center py-3 rounded-xl border-2 border-primary-500 text-primary-600 font-semibold hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors mb-6">Start Free Trial</a>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> 1,000 AI messages/mo</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> 100 voice minutes</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> 50 documents/mo</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> 1 business type</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> Email support</li>
+        </ul>
+      </div>
+
+      <!-- Professional (Popular) -->
+      <div class="relative rounded-2xl p-8 border-2 border-primary-500 shadow-2xl card-hover bg-white dark:bg-gray-900">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full pricing-popular text-white text-xs font-bold">MOST POPULAR</div>
+        <h3 class="text-xl font-bold mb-2">Professional</h3>
+        <p class="text-sm text-gray-500 mb-6">For growing businesses</p>
+        <div class="mb-6">
+          <span class="text-5xl font-extrabold gradient-text">$99</span>
+          <span class="text-gray-500">/month</span>
+        </div>
+        <a href="register.html" class="btn-primary block w-full text-center py-3 rounded-xl text-white font-semibold shadow-lg mb-6">Start Free Trial</a>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> 10,000 AI messages/mo</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> 1,000 voice minutes</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> Unlimited documents</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> All business types</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> Priority support</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> Custom branding</li>
+        </ul>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="glass rounded-2xl p-8 border border-gray-200 dark:border-gray-800 card-hover">
+        <h3 class="text-xl font-bold mb-2">Enterprise</h3>
+        <p class="text-sm text-gray-500 mb-6">For large organizations</p>
+        <div class="mb-6">
+          <span class="text-5xl font-extrabold">Custom</span>
+        </div>
+        <a href="register.html" class="block w-full text-center py-3 rounded-xl border-2 border-primary-500 text-primary-600 font-semibold hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors mb-6">Contact Sales</a>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> Unlimited everything</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> Dedicated AI model</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> On-premise deployment</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> SLA & compliance</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> 24/7 phone support</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-success-500"></i> Custom integrations</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FAQ ============== -->
+<section id="faq" class="py-20 lg:py-32">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs font-semibold mb-4">
+        <i data-lucide="help-circle" class="w-3 h-3"></i> FAQ
+      </div>
+      <h2 class="text-4xl lg:text-5xl font-bold mb-4">Frequently asked <span class="gradient-text">questions</span></h2>
+    </div>
+
+    <div class="space-y-3">
+      <details class="glass rounded-xl p-5 border border-gray-200 dark:border-gray-800 group" open>
+        <summary class="flex items-center justify-between cursor-pointer font-semibold">
+          What is OmniAssist AI?
+          <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+        </summary>
+        <p class="mt-3 text-gray-600 dark:text-gray-400 text-sm">OmniAssist AI is an AI Employee that automates customer communication for any business — handling chats, voice calls, documents, and analytics 24/7.</p>
+      </details>
+
+      <details class="glass rounded-xl p-5 border border-gray-200 dark:border-gray-800 group">
+        <summary class="flex items-center justify-between cursor-pointer font-semibold">
+          Which businesses can use OmniAssist AI?
+          <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+        </summary>
+        <p class="mt-3 text-gray-600 dark:text-gray-400 text-sm">Any business! Hospitals, schools, grocery stores, hotels, restaurants, retail shops, coaching institutes, clinics, real estate, automobile showrooms, and any SME.</p>
+      </details>
+
+      <details class="glass rounded-xl p-5 border border-gray-200 dark:border-gray-800 group">
+        <summary class="flex items-center justify-between cursor-pointer font-semibold">
+          Do I need technical skills to set it up?
+          <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+        </summary>
+        <p class="mt-3 text-gray-600 dark:text-gray-400 text-sm">Not at all. Our setup wizard guides you through the entire process in under 5 minutes. No coding required.</p>
+      </details>
+
+      <details class="glass rounded-xl p-5 border border-gray-200 dark:border-gray-800 group">
+        <summary class="flex items-center justify-between cursor-pointer font-semibold">
+          Is my data secure?
+          <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+        </summary>
+        <p class="mt-3 text-gray-600 dark:text-gray-400 text-sm">Yes. We use enterprise-grade encryption, are SOC 2 compliant, and never use your data to train our models.</p>
+      </details>
+
+      <details class="glass rounded-xl p-5 border border-gray-200 dark:border-gray-800 group">
+        <summary class="flex items-center justify-between cursor-pointer font-semibold">
+          Can I cancel anytime?
+          <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+        </summary>
+        <p class="mt-3 text-gray-600 dark:text-gray-400 text-sm">Absolutely. No long-term contracts. Cancel anytime from your dashboard with one click.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CTA ============== -->
+<section class="py-20 lg:py-32">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="relative overflow-hidden rounded-3xl gradient-bg p-12 lg:p-16 text-center text-white shadow-2xl">
+      <div class="absolute inset-0 opacity-20">
+        <div class="particle w-32 h-32 bg-white rounded-full blur-3xl animate-float" style="top:-50px;left:-50px"></div>
+        <div class="particle w-40 h-40 bg-white rounded-full blur-3xl animate-float-slow" style="bottom:-50px;right:-50px"></div>
+      </div>
+      <div class="relative">
+        <h2 class="text-4xl lg:text-5xl font-bold mb-4">Ready to hire your AI Employee?</h2>
+        <p class="text-lg opacity-90 mb-8 max-w-2xl mx-auto">Join 10,000+ businesses already using OmniAssist AI to delight customers and grow revenue.</p>
+        <a href="register.html" class="inline-flex items-center gap-2 bg-white text-primary-600 font-bold px-8 py-4 rounded-2xl shadow-2xl hover:scale-105 transition-transform">
+          Start Your Free Trial
+          <i data-lucide="arrow-right" class="w-5 h-5"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer class="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-8">
+      <div class="col-span-2">
+        <a href="index.html" class="flex items-center gap-2 mb-4">
+          <div class="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center">
+            <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+          </div>
+          <span class="text-lg font-bold gradient-text">OmniAssist AI</span>
+        </a>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 max-w-sm">One AI Assistant for Every Business. Automate customer communication across all channels.</p>
+        <div class="flex gap-3">
+          <a href="#" class="w-9 h-9 rounded-lg glass flex items-center justify-center hover:scale-110 transition-transform"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+          <a href="#" class="w-9 h-9 rounded-lg glass flex items-center justify-center hover:scale-110 transition-transform"><i data-lucide="linkedin" class="w-4 h-4"></i></a>
+          <a href="#" class="w-9 h-9 rounded-lg glass flex items-center justify-center hover:scale-110 transition-transform"><i data-lucide="github" class="w-4 h-4"></i></a>
+          <a href="#" class="w-9 h-9 rounded-lg glass flex items-center justify-center hover:scale-110 transition-transform"><i data-lucide="youtube" class="w-4 h-4"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3 text-sm">Product</h4>
+        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <li><a href="#features" class="hover:text-primary-600">Features</a></li>
+          <li><a href="#pricing" class="hover:text-primary-600">Pricing</a></li>
+          <li><a href="#" class="hover:text-primary-600">Integrations</a></li>
+          <li><a href="#" class="hover:text-primary-600">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3 text-sm">Company</h4>
+        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <li><a href="#" class="hover:text-primary-600">About</a></li>
+          <li><a href="#" class="hover:text-primary-600">Blog</a></li>
+          <li><a href="#" class="hover:text-primary-600">Careers</a></li>
+          <li><a href="#" class="hover:text-primary-600">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3 text-sm">Legal</h4>
+        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <li><a href="#" class="hover:text-primary-600">Privacy</a></li>
+          <li><a href="#" class="hover:text-primary-600">Terms</a></li>
+          <li><a href="#" class="hover:text-primary-600">Security</a></li>
+          <li><a href="#" class="hover:text-primary-600">GDPR</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-gray-500">© 2025 OmniAssist AI. All rights reserved.</p>
+      <p class="text-sm text-gray-500 flex items-center gap-1">Made with <i data-lucide="heart" class="w-3 h-3 fill-red-500 text-red-500"></i> for businesses worldwide</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Initialize Lucide Icons
+  lucide.createIcons();
+
+  // Theme Toggle
+  const themeToggle = document.getElementById('themeToggle');
+  const html = document.documentElement;
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  if (savedTheme === 'dark') html.classList.add('dark');
+  themeToggle.addEventListener('click', () => {
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    lucide.createIcons();
+  });
+
+  // Mobile Menu
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  mobileMenuBtn.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        mobileMenu.classList.add('hidden');
+      }
+    });
+  });
+
+  // Intersection Observer for fade-in animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.card-hover').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'all 0.6s ease-out';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
